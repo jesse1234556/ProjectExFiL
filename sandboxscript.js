@@ -31,6 +31,7 @@ body.addEventListener('keydown', (e) => {
     }
 });
 
+
 const fs = {
     '/': {
         type: 'dir',
@@ -392,6 +393,18 @@ const commands = {
         printToTerminal(now.toString());
         }
     },
+    testdialogue: {
+    description: 'Open dialogue box with animated text',
+    execute: () => {
+        openDialogue();
+        showDialogueLines([
+            "Hello, operator.",
+            "I’ve been observing your activity.",
+            "You opened the wrong terminal.",
+            "Now… you're going to help me.",
+        ]);
+        }
+    },
    cp: {
     description: 'Copy a file or directory',
     execute: (args) => {
@@ -739,3 +752,71 @@ function placeCaretAtEnd(el) {
 // Welcome message
 printToTerminal('Welcome to the JS Terminal! Type "help" for commands.');
 terminalPrompt.textContent = `${env.user}@${env.hostname}:${env.cwd}> `;
+
+
+const dialogueOverlay = document.getElementById("dialogueOverlay");
+const dialogueBox = document.getElementById("dialogueBox");
+const closeBtn = document.getElementById("closeDialogue");
+const dialogueTerminal = document.getElementById("dialogueTerminal");
+
+closeBtn.addEventListener("click", () => {
+    dialogueOverlay.style.display = "none";
+    dialogueBox.style.display = "none";
+    dialogueTerminal.innerHTML = "";
+});
+
+function openDialogue() {
+    dialogueOverlay.style.display = "block";
+    dialogueBox.style.display = "block";
+}
+
+// random symbols for the decoding effect
+const symbols = "!@#$%^&*()_+=-{}[]<>/?|~";
+function animateLine(line, speed = 35) {
+    return new Promise(resolve => {
+        const lineDiv = document.createElement("div");
+        dialogueTerminal.appendChild(lineDiv);
+
+        // create scrambled version same length as real line
+        let buffer = Array.from(line).map(() =>
+            symbols[Math.floor(Math.random() * symbols.length)]
+        );
+
+        let index = 0;
+
+        const interval = setInterval(() => {
+
+            // reveal next actual character
+            buffer[index] = line[index];
+
+            // re‑scramble remaining characters
+            for (let i = index + 1; i < line.length; i++) {
+                buffer[i] = symbols[Math.floor(Math.random() * symbols.length)];
+            }
+
+            lineDiv.textContent = buffer.join("");
+
+            // scroll terminal to bottom so new line appears at bottom
+            dialogueTerminal.scrollTop = dialogueTerminal.scrollHeight;
+
+            index++;
+
+            if (index >= line.length) {
+                clearInterval(interval);
+                lineDiv.textContent = line; // finalize line
+                dialogueTerminal.scrollTop = dialogueTerminal.scrollHeight;
+                resolve();
+            }
+
+        }, speed);
+    });
+}
+
+
+async function showDialogueLines(lines, delay = 500) {
+    for (let line of lines) {
+        await animateLine(line);
+        await new Promise(r => setTimeout(r, delay));
+    }
+}
+

@@ -48,3 +48,62 @@ body{
     caret-color: #33ff33;     /* cursor color matches text */
 }
 
+.dialogueBox {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 663px;
+    height: 298px;
+
+    background-image: url("HackerDialogueBig.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    padding: 0;
+    display: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+/* Close button */
+.close-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: transparent;
+    border: none;
+    color: #0f0;
+    font-size: 1.1em;
+    cursor: pointer;
+}
+
+/* The OUTPUT terminal */
+.dialogueTerminal {
+    position: absolute;
+    bottom: 17px;
+    left: 25px;
+    right: 25px;
+    top: 24px;
+
+    display: flex;
+    flex-direction: column; /* normal flow top → bottom */
+    justify-content: flex-end; /* push content to bottom initially */
+
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.dialogueTerminal::-webkit-scrollbar { display: none; }
+
+
+.dialogueTerminal div {
+    white-space: pre-wrap;
+    font-family: 'Fira Mono', monospace;
+    color: #0f0;
+    font-size: 14px;
+    line-height: 1.15em;
+}
+
