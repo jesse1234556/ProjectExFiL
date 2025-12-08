@@ -29,6 +29,10 @@ body.addEventListener('keydown', (e) => {
     if (!e.ctrlKey && !e.altKey) {
         terminalInput.focus();
     }
+     if (e.key === "Tab") {
+        e.preventDefault(); // ⛔ Prevent browser from switching focus
+        terminalInput.focus(); // Make sure terminal input is focused
+    }
 });
 
 
@@ -219,7 +223,7 @@ const commands = {
         printToTerminal(env.cwd);
               }
          },
-         whoami: {
+    whoami: {
     description: 'Display current active user',
     execute: () => {
         printToTerminal(env.user);
@@ -401,7 +405,7 @@ const commands = {
             "Hello, operator.",
             "I’ve been observing your activity.",
             "You opened the wrong terminal.",
-            "Now… you're going to help me.",
+            "Now your going to help me.",
         ]);
         }
     },
@@ -676,6 +680,64 @@ commands.help = {
 let historyIndex = null; // tracks current position in history
 
 terminalInput.addEventListener('keydown', function(e) {
+   if (e.key === 'Tab') {
+    e.preventDefault(); // Prevent browser tabbing
+    const input = terminalInput.textContent.trim();
+    
+    // Split input into command and arguments
+    const parts = input.split(' ');
+    const lastPart = parts.pop() || '';
+    const isFirstWord = parts.length === 0; // true if editing the command
+
+    let suggestions = [];
+
+    if (isFirstWord) {
+        // Complete commands
+        suggestions = Object.keys(commands).filter(cmd => cmd.startsWith(lastPart));
+    } else {
+        // Complete files/directories
+        let basePath = '';
+        let partial = lastPart;
+        if (lastPart.includes('/')) {
+            const idx = lastPart.lastIndexOf('/');
+            basePath = lastPart.slice(0, idx + 1); // keep trailing slash
+            partial = lastPart.slice(idx + 1);
+        }
+
+        const cwdPath = resolve(basePath, env.cwd);
+        const node = getNode(cwdPath);
+        if (!node || node.type !== 'dir') return; // nothing to autocomplete
+
+        suggestions = Object.keys(node.children).filter(name => name.startsWith(partial));
+        // Add basePath prefix for display
+        suggestions = suggestions.map(name => basePath + name);
+    }
+
+    if (suggestions.length === 0) return; // no matches
+    if (suggestions.length === 1) {
+        // single match: complete it
+        parts.push(suggestions[0] + (isFirstWord ? '' : (getNode(resolve(suggestions[0], env.cwd))?.type === 'dir' ? '/' : '')));
+        terminalInput.textContent = parts.join(' ');
+    } else {
+        // multiple matches: complete to longest common prefix
+        let prefix = lastPart;
+        for (let i = 0; ; i++) {
+            const char = suggestions[0][i + lastPart.length];
+            if (!char || suggestions.some(s => s[i + lastPart.length] !== char)) break;
+            prefix += char;
+        }
+        parts.push(prefix);
+        terminalInput.textContent = parts.join(' ');
+
+        // Optionally: show all matches
+        // printToTerminal(suggestions.join('  '));
+    }
+
+    placeCaretAtEnd(terminalInput); // move cursor to end
+}
+
+
+
    if (e.key === 'ArrowUp') {
         if (cmdhistory.length === 0) return; // nothing in history
 

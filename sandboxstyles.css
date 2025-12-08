@@ -71,11 +71,11 @@ body{
 .close-btn {
     position: absolute;
     top: 8px;
-    right: 8px;
+    right: 12px;
     background: transparent;
     border: none;
     color: #0f0;
-    font-size: 1.1em;
+    font-size: 1.7em;
     cursor: pointer;
 }
 
@@ -84,7 +84,7 @@ body{
     position: absolute;
     bottom: 17px;
     left: 25px;
-    right: 25px;
+    right: 235px;
     top: 24px;
 
     display: flex;
@@ -103,7 +103,7 @@ body{
     white-space: pre-wrap;
     font-family: 'Fira Mono', monospace;
     color: #0f0;
-    font-size: 14px;
+    font-size: 20px;
     line-height: 1.15em;
 }
 
