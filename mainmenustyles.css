@@ -6,49 +6,50 @@
     font-style: normal;
 }
 
+.container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Body styling */
 body {
-    background: #222;
+    background: #181927;
     font-family: Arial, sans-serif;
-    color: #fff;
+    color: #00f0ff; /* neon cyan-blue */
     margin: 0;
-    height: 100vh;
     position: relative;
 }
 
-/* Header absolutely positioned at the top */
 h1 {
-    position: absolute;
-    top: 17%;
-    left: 50%;
-    transform: translateX(-50%);
-    color: greenyellow;
+    text-align: center;
+    color: #00f0ff; /* neon cyan-blue */
     font-size: 75px;
     font-family: 'Glitchy', Arial, sans-serif;
-    margin: 0;
+    margin-bottom: 75px;
 }
 
 /* Option box perfectly centered */
 .optionBox {
+    margin: 0 auto;
     white-space: nowrap;
     font-size: 25px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
     width: 15%;
-    border: 2px solid #0f0;
+    border: 2px solid #00f0ff; /* neon cyan border */
     border-radius: 5px;
-    background-color: #111;
+    background-color: #0b0c18; /* match background */
     overflow: hidden;
 }
-
 
 .option-content span {
     flex: 1; /* take up remaining space */
 }
+
 .option {
     display: flex;
     align-items: center; /* vertically center both text and SVG */
@@ -56,20 +57,19 @@ h1 {
     position: relative; /* needed for absolute positioning of SVG */
     padding: 40px 10px;
     margin: 0;
-    border-bottom: 1px solid #0a0;
+    border-bottom: 1px solid #002b3d; /* darker neon blue line */
     font-family: 'Courier New', Courier, monospace;
-    color: #0f0;
+    color: #00f0ff; /* neon cyan text */
     cursor: pointer;
     transition: background 0.2s;
 }
-
 
 .option:last-child {
     border-bottom: none;
 }
 
 .option:hover {
-    background-color: #020;
+    background-color: #001f2a; /* darker hover effect */
 }
 
 /* Triangle SVG styling */
@@ -77,11 +77,9 @@ h1 {
     width: 50px;
     height: 50px;
     transform-origin: 50% 50%;
-    filter: drop-shadow(0 0 5px #0f0);
+    filter: drop-shadow(0 0 10px #00f0ff);
     text-align: center;
-   
 }
-
 
 .option-content svg {
     position: absolute;
@@ -89,5 +87,5 @@ h1 {
     transform: translateX(-50%); /* perfect horizontal centering */
     width: 30px;
     height: 30px;
-    filter: drop-shadow(0 0 5px #0f0);
+    filter: drop-shadow(0 0 10px #00f0ff);
 }

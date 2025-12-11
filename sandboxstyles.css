@@ -1,32 +1,43 @@
-body{
-    background: #222
+body {
+    background: #181927; /* dark bluish background */
+    font-family: Arial, sans-serif;
+    color: #00f0ff; /* neon cyan text */
+    margin: 0;
 }
 
+.container {
+    display: flex;
+    justify-content: center; /* centers horizontally */
+    align-items: center;    /* centers vertically */
+    height: 100vh;          /* full viewport height */
+    width: 100vw;           /* full viewport width */
+    box-sizing: border-box; /* include padding/border in size */
+}
 
 .terminal {
-    
     overflow-y: scroll;       /* enables scrolling */
     scrollbar-width: none;    /* Firefox */
     -ms-overflow-style: none; /* Internet Explorer 10+ */
-    background: #222;
-    color: #33ff33;
-    font-family: 'Fira Mono', 'Consolas', monospace;
+    background: #181927;     /* darker bluish background */
+    color: #00deee;           /* neon cyan text */
+    font-family: 'Glitchy', 'Fira Mono', 'Consolas', monospace;
     padding: 20px;
     margin: 0px;
-    /* border-radius: 8px; */
     width: 85vw;
     height: 90vh;
     overflow-y: auto;
-    /* box-shadow: 0 0 10px #000; */
     position: relative;
 }
+
 .terminal::-webkit-scrollbar {
     display: none;            /* Chrome, Safari, Edge */
 }
+
 .terminal-output {
     white-space: pre-wrap;
     margin-bottom: 0px;
 }
+
 .terminal-input-line {
     display: flex;
     align-items: flex-start;   /* top-align the prompt and contenteditable */
@@ -34,18 +45,20 @@ body{
 
 .terminal-prompt {
     margin-right: 5px;
-    color: #00ffcc;
-}.terminal-input {
+    color: #00deee; /* neon cyan prompt */
+}
+
+.terminal-input {
     background: transparent;
     border: none;
-    color: #33ff33;
+    color: #00deee;
     outline: none;
     font-family: inherit;
     font-size: 1em;
     flex: 1;
     min-height: 1.2em;       /* ensures cursor is visible */
     white-space: pre-wrap;    /* allows multi-line input */
-    caret-color: #33ff33;     /* cursor color matches text */
+    caret-color: #00f0ff;     /* cursor color matches text */
 }
 
 .dialogueBox {
@@ -55,31 +68,27 @@ body{
     transform: translate(-50%, -50%);
     width: 663px;
     height: 298px;
-
-    background-image: url("HackerDialogueBig.png");
+    background-image: url("HackerBigBlueBorder.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-
     padding: 0;
     display: none;
     z-index: 9999;
     overflow: hidden;
 }
 
-/* Close button */
 .close-btn {
     position: absolute;
     top: 8px;
     right: 12px;
     background: transparent;
     border: none;
-    color: #0f0;
+    color: #00f0ff;
     font-size: 1.7em;
     cursor: pointer;
 }
 
-/* The OUTPUT terminal */
 .dialogueTerminal {
     position: absolute;
     bottom: 17px;
@@ -98,12 +107,10 @@ body{
 
 .dialogueTerminal::-webkit-scrollbar { display: none; }
 
-
 .dialogueTerminal div {
     white-space: pre-wrap;
-    font-family: 'Fira Mono', monospace;
-    color: #0f0;
+    font-family: 'Glitchy', 'Fira Mono', monospace;
+    color: #00f0ff; /* neon cyan text */
     font-size: 20px;
     line-height: 1.15em;
 }
-
