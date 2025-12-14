@@ -1,7 +1,7 @@
 /* Custom font */
 @font-face {
     font-family: 'Glitchy';
-    src: url('GlitchGoblin-2O87v.ttf') format('truetype');
+    src: url('../assets/GlitchGoblin-2O87v.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }

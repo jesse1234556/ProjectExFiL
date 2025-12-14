@@ -49,7 +49,7 @@ body {
     transform: translate(-50%, -50%);
     width: 720px;
     height: 269px;
-    background-image: url("HackerDialogueBorder.png");
+    background-image: url("../assets/HackerDialogueBorder.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;

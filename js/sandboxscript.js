@@ -27,16 +27,6 @@ let inputText = []; // user text array
 let showCursor = true;
 let cursorBlinkInterval;
 
-body.addEventListener('keydown', (e) => {
-    if (!e.ctrlKey && !e.altKey) {
-        terminalInput.focus();
-    }
-     if (e.key === "Tab") {
-        e.preventDefault(); // ⛔ Prevent browser from switching focus
-        terminalInput.focus(); // Make sure terminal input is focused
-    }
-});
-
 function escapeHTML(text) {
     return text.replace(/[&<>"']/g, (char) => {
         const map = {
@@ -95,8 +85,7 @@ startCursorBlink();
 
 // Assuming terminalInput is your input container element
 body.addEventListener('keydown', (event) => {
-    event.preventDefault(); // prevent default browser behavior (like scrolling)
-console.log("hello");
+   //event.preventDefault(); // prevent default browser behavior (like scrolling) disabled for now 
    switch(event.key) {
     case 'ArrowLeft':
         if (cursorIndex > 0) cursorIndex--;
@@ -808,7 +797,7 @@ let historyIndex = null; // tracks current position in history
 
 
 
-terminalInput.addEventListener('keydown', function(e) {
+body.addEventListener('keydown', function(e) {
  if (e.key === 'Tab') {
     e.preventDefault(); // Prevent browser tabbing
 

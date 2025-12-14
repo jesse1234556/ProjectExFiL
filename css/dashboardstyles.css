@@ -1,0 +1,125 @@
+@font-face {
+    font-family: 'Comfortaa';
+    src: url('../assets/Comfortaa-VariableFont_wght.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+body {
+    background: #181927;
+    font-family: Comfortaa, Arial, sans-serif;
+    color: #00f0ff; /* neon cyan-blue */
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 25em);
+    grid-template-rows: repeat(2, 25em);
+    gap: 5px;
+}
+
+
+#missions{
+
+    background-image: url('../assets/missions.png'); /* Set your image path */
+    background-size: cover;       /* Make the image cover the whole element */
+    background-position: center;  /* Center the image */
+    background-repeat: no-repeat; /* Prevent tiling */
+}
+
+#circuitbreaker {
+    background-image: url('../assets/circuitbreaker.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+}
+
+#hack {
+    background-image: url('../assets/hack.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+}
+
+#blackmarket {
+    background-image: url('../assets/blackmarket.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+}
+
+
+.grid-item {
+    background-image: url('../assets/hack.png'); /* Set your image path */
+    background-size: cover;       /* Make the image cover the whole element */
+    background-position: center;  /* Center the image */
+    background-repeat: no-repeat; /* Prevent tiling */
+    border: 2px solid #00f0ff;
+    box-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff inset;
+    display: flex;
+    font-size: 2rem;
+    font-weight: bold;
+    flex-direction: column;
+}
+
+
+.bottomtext {
+   margin-top: auto;
+    text-align: center;
+    transform: translateY(-2vh);
+}
+
+.centered {
+    margin-top: auto;
+    margin-bottom: auto;   /* vertical centering */
+    align-self: center;    /* horizontal centering */
+    text-align: center;    /* center text */
+    transform: translateY(5vh);
+
+}
+
+.grid-item {
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        filter 0.25s ease;
+}
+
+.grid-item:hover {
+    transform: scale(1.03) translateY(-4px);
+    box-shadow:
+        0 0 10px #00f0ff,
+        0 0 25px #00f0ff,
+        0 0 15px #00f0ff inset;
+    filter: brightness(1.15) contrast(1.1);
+    cursor: pointer;
+}
+
+.grid-item::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(0, 240, 255, 0.15),
+        transparent
+    );
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+}
+
+.grid-item:hover::after {
+    opacity: 1;
+}
+
