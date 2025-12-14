@@ -4,6 +4,7 @@ const terminal = document.getElementById('terminal');
 const body = document.body;
 const terminalPrompt = document.getElementById('terminal-prompt');
 
+
 const env = {
     user: 'Guest',            // username
     hostname: 'ProjectExFiL',  // optional hostname
@@ -22,6 +23,13 @@ function printToTerminal(text) {
     terminalOutput.appendChild(line);
     terminal.scrollTop = terminal.scrollHeight;
 }
+
+terminalInput.addEventListener('paste', (e) => {
+  e.preventDefault(); // Stop the default paste
+  const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+  document.execCommand('insertText', false, text); // Insert plain text
+});
+
 
 // Focus input when anywhere is clicked or a keypress is detected,
 // but ignore if Ctrl or Alt is held
@@ -647,8 +655,9 @@ rm: {
         printToTerminal(`Removed '${path}'`);
     }
 },
-
 };
+
+
 
 const usage = {
   mainmenu: "mainmenu [-f]",
@@ -673,6 +682,7 @@ const usage = {
 
 const listOfKeys = Object.keys(commands).join(", ")
 
+//help command outside of commands object because cant print listofKeys since it doesnt exist before getting defined
 commands.help = {
     description: 'Show available commands', 
     execute: () => printToTerminal('Avaliable commands: help, ' + listOfKeys)
@@ -727,10 +737,15 @@ terminalInput.addEventListener('keydown', function(e) {
             prefix += char;
         }
         parts.push(prefix);
-        terminalInput.textContent = parts.join(' ');
+        
 
-        // Optionally: show all matches
-        // printToTerminal(suggestions.join('  '));
+        //show all possible combinations if already longest common prefix 
+        if (terminalInput.textContent == parts.join(' ')){
+        printToTerminal(`${env.user}@${env.hostname}:${env.cwd}> ${input}`);
+        printToTerminal(suggestions.join('  '));
+        } else {
+            terminalInput.textContent = parts.join(' ');
+        };
     }
 
     placeCaretAtEnd(terminalInput); // move cursor to end

@@ -5,14 +5,6 @@ body {
     margin: 0;
 }
 
-.container {
-    display: flex;
-    justify-content: center; /* centers horizontally */
-    align-items: center;    /* centers vertically */
-    height: 100vh;          /* full viewport height */
-    width: 100vw;           /* full viewport width */
-    box-sizing: border-box; /* include padding/border in size */
-}
 
 .terminal {
     overflow-y: scroll;       /* enables scrolling */
