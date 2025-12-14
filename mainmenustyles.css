@@ -1,0 +1,92 @@
+/* Custom font */
+@font-face {
+    font-family: 'Glitchy';
+    src: url('GlitchGoblin-2O87v.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-8vh);
+}
+
+/* Body styling */
+body {
+    background: #181927;
+    font-family: Arial, sans-serif;
+    color: #00f0ff; /* neon cyan-blue */
+    margin: 0;
+    position: relative;
+}
+
+h1 {
+    text-align: center;
+    color: #00f0ff; /* neon cyan-blue */
+    font-size: 75px;
+    font-family: 'Glitchy', Arial, sans-serif;
+    margin-bottom: 75px;
+}
+
+/* Option box perfectly centered */
+.optionBox {
+    margin: 0 auto;
+    white-space: nowrap;
+    font-size: 25px;
+    display: flex;
+    flex-direction: column;
+    width: 15%;
+    border: 2px solid #00f0ff; /* neon cyan border */
+    border-radius: 5px;
+    background-color: #0b0c18; /* match background */
+    overflow: hidden;
+}
+
+.option-content span {
+    flex: 1; /* take up remaining space */
+}
+
+.option {
+    display: flex;
+    align-items: center; /* vertically center both text and SVG */
+    justify-content: flex-start; /* keep everything starting from left */
+    position: relative; /* needed for absolute positioning of SVG */
+    padding: 40px 10px;
+    margin: 0;
+    border-bottom: 1px solid #002b3d; /* darker neon blue line */
+    font-family: 'Courier New', Courier, monospace;
+    color: #00f0ff; /* neon cyan text */
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.option:last-child {
+    border-bottom: none;
+}
+
+.option:hover {
+    background-color: #001f2a; /* darker hover effect */
+}
+
+/* Triangle SVG styling */
+.triangle {
+    width: 50px;
+    height: 50px;
+    transform-origin: 50% 50%;
+    filter: drop-shadow(0 0 10px #00f0ff);
+    text-align: center;
+}
+
+.option-content svg {
+    position: absolute;
+    left: 75%; /* center horizontally in the option box */
+    transform: translateX(-50%); /* perfect horizontal centering */
+    width: 30px;
+    height: 30px;
+    filter: drop-shadow(0 0 10px #00f0ff);
+}

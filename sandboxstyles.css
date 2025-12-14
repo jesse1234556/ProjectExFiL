@@ -1,0 +1,108 @@
+body {
+    background: #181927; /* dark bluish background */
+    font-family: Arial, sans-serif;
+    color: #00f0ff; /* neon cyan text */
+    margin: 0;
+}
+
+
+.terminal {
+    overflow-y: scroll;       /* enables scrolling */
+    scrollbar-width: none;    /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    background: #181927;     /* darker bluish background */
+    color: #00deee;           /* neon cyan text */
+    font-family: 'Glitchy', 'Fira Mono', 'Consolas', monospace;
+    padding: 20px;
+    margin: 0px;
+    width: 85vw;
+    height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.terminal::-webkit-scrollbar {
+    display: none;            /* Chrome, Safari, Edge */
+}
+
+.terminal-output {
+    white-space: pre-wrap;
+    margin-bottom: 0px;
+}
+
+.terminal-input-line {
+    display: flex;
+    align-items: flex-start;   /* top-align the prompt and contenteditable */
+}
+
+.terminal-prompt {
+    margin-right: 5px;
+    color: #00deee; /* neon cyan prompt */
+}
+
+.terminal-input {
+    background: transparent;
+    border: none;
+    color: #00deee;
+    outline: none;
+    font-family: inherit;
+    font-size: 1em;
+    flex: 1;
+    min-height: 1.2em;       /* ensures cursor is visible */
+    white-space: pre-wrap;    /* allows multi-line input */
+    caret-color: #00f0ff;     /* cursor color matches text */
+}
+
+.dialogueBox {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 720px;
+    height: 269px;
+    background-image: url("HackerDialogueBorder.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    padding: 0;
+    display: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.close-btn {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    color: #00f0ff;
+    font-size: 1.7em;
+    cursor: pointer;
+}
+
+.dialogueTerminal {
+    position: absolute;
+    bottom: 17px;
+    left: 25px;
+    right: 235px;
+    top: 24px;
+
+    display: flex;
+    flex-direction: column; /* normal flow top → bottom */
+    justify-content: flex-end; /* push content to bottom initially */
+
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.dialogueTerminal::-webkit-scrollbar { display: none; }
+
+.dialogueTerminal div {
+    white-space: pre-wrap;
+    font-family: 'Glitchy', 'Fira Mono', monospace;
+    color: #00f0ff; /* neon cyan text */
+    font-size: 20px;
+    line-height: 1.15em;
+}
