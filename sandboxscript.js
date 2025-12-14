@@ -1,8 +1,6 @@
-const terminalOutput = document.getElementById('terminal-output');
-const terminalInput = document.getElementById('terminal-input');
+const terminalInput = document.getElementById('InputLine');
 const terminal = document.getElementById('terminal');
 const body = document.body;
-const terminalPrompt = document.getElementById('terminal-prompt');
 
 
 const env = {
@@ -19,20 +17,16 @@ let cmdhistory = [];
 
 function printToTerminal(text) {
     const line = document.createElement('div');
+    line.className = 'line';
     line.textContent = text;
-    terminalOutput.appendChild(line);
+    terminal.insertBefore(line, terminalInput);
     terminal.scrollTop = terminal.scrollHeight;
 }
+let cursorIndex = 0;
+let inputText = []; // user text array
+let showCursor = true;
+let cursorBlinkInterval;
 
-terminalInput.addEventListener('paste', (e) => {
-  e.preventDefault(); // Stop the default paste
-  const text = (e.clipboardData || window.clipboardData).getData('text/plain');
-  document.execCommand('insertText', false, text); // Insert plain text
-});
-
-
-// Focus input when anywhere is clicked or a keypress is detected,
-// but ignore if Ctrl or Alt is held
 body.addEventListener('keydown', (e) => {
     if (!e.ctrlKey && !e.altKey) {
         terminalInput.focus();
@@ -42,6 +36,129 @@ body.addEventListener('keydown', (e) => {
         terminalInput.focus(); // Make sure terminal input is focused
     }
 });
+
+function escapeHTML(text) {
+    return text.replace(/[&<>"']/g, (char) => {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+        };
+        return map[char];
+    });
+}
+
+function removeLines() {
+    const children = Array.from(terminal.children); // make a copy of children
+    children.forEach(child => {
+        if (child.classList.contains('line')) {
+            terminal.removeChild(child);
+        }
+    });
+}
+
+
+function RenderLineText() {
+    let renderedText = '';
+
+    for (let i = 0; i < inputText.length; i++) {
+        if (i === cursorIndex && showCursor) {
+            renderedText += `<span class="highlighted">${escapeHTML(inputText[i] || ' ')}</span>`;
+        } else {
+            renderedText += escapeHTML(inputText[i]);
+        }
+    }
+
+    // Cursor at end
+    if (cursorIndex === inputText.length && showCursor) {
+        renderedText += `<span class="highlighted">&nbsp;</span>`;
+    }
+
+    terminalInput.innerHTML = `${env.user}@${env.hostname}:${env.cwd}> ` + renderedText;
+}
+
+
+function startCursorBlink() {
+    clearInterval(cursorBlinkInterval); // stop any existing interval
+    showCursor = true; // make sure cursor is visible immediately
+    RenderLineText();
+
+    cursorBlinkInterval = setInterval(() => {
+        showCursor = !showCursor;
+        RenderLineText();
+    }, 500);
+}
+
+startCursorBlink();
+
+// Assuming terminalInput is your input container element
+body.addEventListener('keydown', (event) => {
+    event.preventDefault(); // prevent default browser behavior (like scrolling)
+console.log("hello");
+   switch(event.key) {
+    case 'ArrowLeft':
+        if (cursorIndex > 0) cursorIndex--;
+        break;
+    case 'ArrowRight':
+        if (cursorIndex < inputText.length) cursorIndex++;
+        break;
+    case 'Backspace':
+        if (cursorIndex > 0) {
+            inputText.splice(cursorIndex - 1, 1);
+            cursorIndex--;
+        }
+        break;
+    case 'Delete':
+        if (cursorIndex < inputText.length) {
+            inputText.splice(cursorIndex, 1);
+        }
+        break;
+    case 'Home':
+        cursorIndex = 0;  // Move cursor to start
+        break;
+    case 'End':
+        cursorIndex = inputText.length;  // Move cursor to end
+        break;
+    default:
+        // Only handle single-character keys (letters, numbers, symbols)
+        if (event.key.length === 1) {
+            inputText.splice(cursorIndex, 0, event.key);
+            cursorIndex++;
+        }
+}
+
+    startCursorBlink();
+    RenderLineText(); // update the terminal display after each key
+});
+
+
+
+//i dont think this is needed
+function GetInputLineText() {
+    // Get the full text from the terminal input
+    const fullText = terminalInput.textContent;
+    
+    // Find the index of the last '> ' and get everything after it
+    const index = fullText.lastIndexOf(' ');
+
+    // Return the text after the '> ' 
+    return fullText.substring(index + 1);
+    
+}
+
+//deal with this later
+terminalInput.addEventListener('paste', (e) => {
+  e.preventDefault(); // Stop the default paste
+  const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+  document.execCommand('insertText', false, text); // Insert plain text
+});
+
+
+// Focus input when anywhere is clicked or a keypress is detected,
+// but ignore if Ctrl or Alt is held
+
 
 
 const fs = {
@@ -243,7 +360,7 @@ const commands = {
     },
     clear: {
         description: 'Clear terminal output',
-        execute: () => terminalOutput.innerHTML = ''
+        execute: () => removeLines()
     },
    man: {
       description: 'Lists description of command',
@@ -689,14 +806,17 @@ commands.help = {
 }
 let historyIndex = null; // tracks current position in history
 
+
+
 terminalInput.addEventListener('keydown', function(e) {
-   if (e.key === 'Tab') {
+ if (e.key === 'Tab') {
     e.preventDefault(); // Prevent browser tabbing
-    const input = terminalInput.textContent.trim();
-    
+
+    const input = inputText.join('').trim();
+
     // Split input into command and arguments
-    const parts = input.split(' ');
-    const lastPart = parts.pop() || '';
+    let parts = input.split(' ');
+    let lastPart = parts.pop() || '';
     const isFirstWord = parts.length === 0; // true if editing the command
 
     let suggestions = [];
@@ -719,17 +839,34 @@ terminalInput.addEventListener('keydown', function(e) {
         if (!node || node.type !== 'dir') return; // nothing to autocomplete
 
         suggestions = Object.keys(node.children).filter(name => name.startsWith(partial));
-        // Add basePath prefix for display
-        suggestions = suggestions.map(name => basePath + name);
+        suggestions = suggestions.map(name => basePath + name); // add basePath prefix
     }
 
-    if (suggestions.length === 0) return; // no matches
-    if (suggestions.length === 1) {
-        // single match: complete it
-        parts.push(suggestions[0] + (isFirstWord ? '' : (getNode(resolve(suggestions[0], env.cwd))?.type === 'dir' ? '/' : '')));
-        terminalInput.textContent = parts.join(' ');
-    } else {
-        // multiple matches: complete to longest common prefix
+    if (suggestions.length === 0) return;
+
+   if (suggestions.length === 1) {
+    // Single match: complete it
+    let completion = suggestions[0];
+
+    if (!isFirstWord) {
+        const node = getNode(resolve(completion, env.cwd));
+        if (node?.type === 'dir') {
+            completion += '/'; // keep slash for directories
+        } else {
+            completion += ' '; // add space after file
+        }
+    }
+
+    parts.push(completion);
+
+    // Update inputText correctly with spaces
+    inputText = parts.join(' ').split('');
+    cursorIndex = inputText.length;
+    RenderLineText();
+}
+
+else {
+        // Multiple matches: complete to longest common prefix
         let prefix = lastPart;
         for (let i = 0; ; i++) {
             const char = suggestions[0][i + lastPart.length];
@@ -737,54 +874,57 @@ terminalInput.addEventListener('keydown', function(e) {
             prefix += char;
         }
         parts.push(prefix);
-        
 
-        //show all possible combinations if already longest common prefix 
-        if (terminalInput.textContent == parts.join(' ')){
-        printToTerminal(`${env.user}@${env.hostname}:${env.cwd}> ${input}`);
-        printToTerminal(suggestions.join('  '));
-        } else {
-            terminalInput.textContent = parts.join(' ');
-        };
+        // Show all possibilities if already at longest common prefix
+        if (input === parts.join(' ')) {
+            printToTerminal(`${env.user}@${env.hostname}:${env.cwd}> ${input}`);
+            printToTerminal(suggestions.join('  '));
+        }
     }
 
-    placeCaretAtEnd(terminalInput); // move cursor to end
+    // Update inputText array and cursor
+    inputText = parts.join(' ')?.split('') || [];
+    cursorIndex = inputText.length;
+    RenderLineText();
 }
 
-
-
    if (e.key === 'ArrowUp') {
-        if (cmdhistory.length === 0) return; // nothing in history
+    if (cmdhistory.length === 0) return;
 
-        if (historyIndex === null) {
-            historyIndex = cmdhistory.length - 1; // start from last command
-        } else if (historyIndex > 0) {
-            historyIndex--;
-        }
-
-        terminalInput.textContent = cmdhistory[historyIndex];
-        placeCaretAtEnd(terminalInput); // helper to move cursor to end
-        e.preventDefault(); // prevent cursor moving to start
+    if (historyIndex === null) {
+        historyIndex = cmdhistory.length - 1;
+    } else if (historyIndex > 0) {
+        historyIndex--;
     }
 
-    if (e.key === 'ArrowDown') {
-        if (historyIndex === null) return; // not browsing history
+    // Update inputText to the command from history
+    inputText = cmdhistory[historyIndex].split(''); // convert string to array of chars
+    cursorIndex = inputText.length; // place cursor at end
+    RenderLineText();
+    e.preventDefault();
+}
 
-        if (historyIndex < cmdhistory.length - 1) {
-            historyIndex++;
-            terminalInput.textContent = cmdhistory[historyIndex];
-        } else {
-            historyIndex = null; // back to fresh input
-            terminalInput.textContent = '';
-        }
-        placeCaretAtEnd(terminalInput);
-        e.preventDefault();
+if (e.key === 'ArrowDown') {
+    if (historyIndex === null) return;
+
+    if (historyIndex < cmdhistory.length - 1) {
+        historyIndex++;
+        inputText = cmdhistory[historyIndex].split('');
+    } else {
+        historyIndex = null;
+        inputText = [];
     }
-
+    cursorIndex = inputText.length; // place cursor at end
+    RenderLineText();
+    e.preventDefault();
+}
 if (e.key === 'Enter') {
     e.preventDefault(); 
-    const input = terminalInput.textContent.trim(); // trim spaces
 
+    const input = inputText.join('').trim().replace(/\s+/g, ' '); // join array into string and trim
+    console.log(input);
+    input.trim();
+    console.log(input);
     if (input === '') return; // ignore empty commands
 
     printToTerminal(`${env.user}@${env.hostname}:${env.cwd}> ${input}`);
@@ -797,25 +937,29 @@ if (e.key === 'Enter') {
         printToTerminal('Unknown command: ' + input);
     }
 
-  
-    historyIndex = null;     // reset history pointer
+    historyIndex = null; // reset history pointer
 
-    if (input.trim() !== '' && input !== cmdhistory[cmdhistory.length - 1]) {
-    cmdhistory.push(input);
+    // Save to history if not empty and not duplicate of last
+    if (input !== '' && input !== cmdhistory[cmdhistory.length - 1]) {
+        cmdhistory.push(input);
+    }
+
+    // Trim history if exceeds max
+    if (cmdhistory.length > MAX_HISTORY) {
+        cmdhistory.shift();
+    }
+
+    // Reset inputText and cursor
+    inputText = [];
+    cursorIndex = 0;
+    RenderLineText(); // update terminal display
 }
 
 
-      // Trim history if it exceeds the max
-      if (cmdhistory.length > MAX_HISTORY) {
-          cmdhistory.shift(); // remove the oldest command
-      }
-          
-    terminalInput.textContent = '';
-    terminalPrompt.textContent = `${env.user}@${env.hostname}:${env.cwd}> `;
-}
+})
 
-});
-
+//Old CaretAtEnd function
+/*
 function placeCaretAtEnd(el) {
     const range = document.createRange();
     const sel = window.getSelection();
@@ -825,11 +969,16 @@ function placeCaretAtEnd(el) {
     sel.addRange(range);
     el.focus();
 }
-
+*/
 // Welcome message
 printToTerminal('Welcome to the JS Terminal! Type "help" for commands.');
-terminalPrompt.textContent = `${env.user}@${env.hostname}:${env.cwd}> `;
+//show empty terminal input line
+RenderLineText();
+console.log(GetInputLineText());
 
+
+
+//dialogue box stuff
 
 const dialogueOverlay = document.getElementById("dialogueOverlay");
 const dialogueBox = document.getElementById("dialogueBox");

@@ -3,54 +3,43 @@ body {
     font-family: Arial, sans-serif;
     color: #00f0ff; /* neon cyan text */
     margin: 0;
+    word-wrap: break-word;
+    
 }
 
 
 .terminal {
     overflow-y: scroll;       /* enables scrolling */
     scrollbar-width: none;    /* Firefox */
-    -ms-overflow-style: none; /* Internet Explorer 10+ */
     background: #181927;     /* darker bluish background */
     color: #00deee;           /* neon cyan text */
-    font-family: 'Glitchy', 'Fira Mono', 'Consolas', monospace;
+    font-family: 'Consolas', monospace;
     padding: 20px;
     margin: 0px;
-    width: 85vw;
+    width: 95vw;
     height: 90vh;
     overflow-y: auto;
     position: relative;
+    overflow-wrap: break-word;
+    word-break: break-all;
 }
 
-.terminal::-webkit-scrollbar {
-    display: none;            /* Chrome, Safari, Edge */
-}
-
-.terminal-output {
+.line {
     white-space: pre-wrap;
-    margin-bottom: 0px;
+    overflow-wrap: break-word;
+    word-break: break-all;
+    outline: none;   /* removes the default focus border */
 }
 
-.terminal-input-line {
-    display: flex;
-    align-items: flex-start;   /* top-align the prompt and contenteditable */
+.InputLine{
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+        outline: none;   /* removes the default focus border */
 }
 
-.terminal-prompt {
-    margin-right: 5px;
-    color: #00deee; /* neon cyan prompt */
-}
-
-.terminal-input {
-    background: transparent;
-    border: none;
-    color: #00deee;
-    outline: none;
-    font-family: inherit;
-    font-size: 1em;
-    flex: 1;
-    min-height: 1.2em;       /* ensures cursor is visible */
-    white-space: pre-wrap;    /* allows multi-line input */
-    caret-color: #00f0ff;     /* cursor color matches text */
+.highlighted {
+    background-color: #00deee; /* neon cyan background */
+    color: #181927;            /* dark text to contrast */
 }
 
 .dialogueBox {
