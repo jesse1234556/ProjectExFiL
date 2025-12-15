@@ -1,0 +1,55 @@
+@font-face {
+    font-family: 'Comfortaa';
+    src: url('../assets/Comfortaa-VariableFont_wght.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+body {
+    background: #181927;
+    font-family: Comfortaa, Arial, sans-serif;
+    color: #00f0ff; /* neon cyan-blue */
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 25em);
+    grid-template-rows: repeat(2, 25em);
+    gap: 5px;
+}
+
+.grid-item {
+  
+    display: flex;
+    font-size: 2rem;
+    font-weight: bold;
+    flex-direction: column;
+}
+
+
+.bottomtext {
+   margin-top: auto;
+    text-align: center;
+    transform: translateY(-2vh);
+}
+
+.centeredimage {
+    filter:
+  drop-shadow(0 0 10px rgba(0, 183, 255, 0.45))
+  drop-shadow(0 0 25px rgba(0, 183, 255, 0.25))
+  drop-shadow(0 0 45px rgba(0, 183, 255, 0.15));
+
+    width: 50%; 
+    margin-top: auto;
+    margin-bottom: auto;   
+    align-self: center;    
+    text-align: center;    
+    
+
+}

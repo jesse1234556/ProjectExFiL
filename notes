@@ -6,10 +6,14 @@ extremely simple puzzles
 
 Each level would be a different company your trying to breach and exfiltrate data
 
-git 
+
 Save game would save:
-Money (can be spent, gained from missions), used in store. 
-Reputation (Never decrease, gained from missions), used to unlock better missions. 
+Money (can be spent, gained from missions or hacking), used in store. 
+Highest completed mission
+Hacks completed
+Things Bought in shop
+CircuitBreakers bought, high scores? 
+
 
 Dashboard "
 Missions: Given to you by the Hooded figure, 1-6?:
