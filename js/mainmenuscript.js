@@ -1,12 +1,12 @@
 // Option sets
 const mainMenuOptions = [
-    { text: "> New Game", target: "playOptions", color: "#00f0ff" },
+    { text: "> Play", target: "playOptions", color: "#00f0ff" },
     { text: "> Tutorial", target: "tutorial.html", color: "#00f0ff" },
     { text: "> Sandbox", target: "sandbox.html", color: "#00f0ff" },
 ];
 
 const playOptions = [
-    { text: "> New Game", target: "newgame.html", color: "#00f0ff" },
+    { text: "> New Game", target: "dashboard.html", color: "#00f0ff" },
     { text: "> Load Game", target: "loadgame.html", color: "#00f0ff" },
     { text: "> Back", target: "mainMenuOptions", color: "#00f0ff" },
 ];
