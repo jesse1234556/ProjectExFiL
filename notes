@@ -1,0 +1,60 @@
+puzzles
+
+tutorial puzzle:
+extremely simple puzzles 
+
+
+Each level would be a different company your trying to breach and exfiltrate data
+
+git 
+Save game would save:
+Money (can be spent, gained from missions), used in store. 
+Reputation (Never decrease, gained from missions), used to unlock better missions. 
+
+Dashboard "
+Missions: Given to you by the Hooded figure, 1-6?:
+Includes a short description and a ssh command, once you type the ssh command your terminal resets and the missions starts with dialogue and a sidebar appearing with objectives and notes. 
+
+Hack (like personal smaller mission to just go hack someone),
+Start them in-menu, puts you in terminal with a countdown to start and a timer once countdown ends. 
+
+Store (may include customizations? used to buy fun, non-learning minigames),
+
+Hack Concept missions:
+Timed missions to test proficiency with command line tools
+dozens of files and folders, cd and ls and cat as fast as you can. Utilize grep. 
+
+
+Mission 1: 
+Learn: cd, cat, ls, grep, 'upload' command is special just to the game, behaves like cp or mv.  
+-------
+Phase 1: 
+I need to see what your made of.
+I have a test server I need you to hack so I can evaluate your abilities.
+#(Continue) 
+I will give you further instructions after you connect. 
+"ssh into hooded figures server"
+"Find the password/flag/names/emails or whatever" 
+Consists of just cd, ls, and cat 
+----
+Phase 2: 
+Alright your not so bad. 
+I still cannot trust you with anything important,
+this ones going to be slightly more difficult. 
+#(Continue) 
+I will give you further instructions after you connect. 
+"ssh into hooded figures server" 
+"Find the password/flag/names/emails or whatever" 
+Consist of slightly more amount of folders, not as simple as to figure out where to go. 
+---
+Phase 3: 
+Now this is where I really see how much you know. 
+I need you to look through this server and find a file that has a specific keyword
+#(Continue)
+The keyword is 'Plane_crash'
+You are probably going to need to utilize the grep command for this
+#(Continue)
+Goodluck
+
+
+

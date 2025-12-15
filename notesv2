@@ -1,0 +1,17 @@
+Project ExFilNotes Mission 2 ideas
+
+Phase 1 TBD
+
+
+Phase 2: Hiding your tracks
+
+This server is special, I still need to make use of it.
+So heres what we are going to do, try to keep up;
+Your tracks are currently inside of Command_Logs.json 
+But they are also in another file called Logs.json
+I need to keep that Logs.json file but I need it disrupted.
+Delete the Command_logs so they cant directly see your actions, 
+Logs.json is alright to keep since its rarely checked and has too much data to parse. 
+but just to be sure we are going to be doing some obsfucation. 
+Install my package 'RandomLogs' are then run the RandLogs command to create a bunch of fake logs,
+rename the original Logs.json to be "Logs85.json" so I know where it is. 
