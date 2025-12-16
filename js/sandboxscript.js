@@ -4,12 +4,12 @@ const body = document.body;
 
 
 const env = {
-    user: 'Guest',            // username
-    hostname: 'ProjectExFiL',  // optional hostname
-    cwd: '/home/user',       // current working directory
-    home: '/home/user',      // home directory, for ~ expansion
-    // you can add more later, e.g., PATH, aliases, etc.
+  user: 'Guest',              // username
+  hostname: 'ProjectExFiL',   // optional hostname
+  cwd: '/home/admin',         // current working directory
+  home: '/home/admin',        // home directory, for ~ expansion
 };
+
 
 const MAX_HISTORY = 50;
 
@@ -149,58 +149,336 @@ terminalInput.addEventListener('paste', (e) => {
 // but ignore if Ctrl or Alt is held
 
 
-
 const fs = {
-    '/': {
+  '/': {
+    type: 'dir',
+    children: {
+      'bin': {
         type: 'dir',
         children: {
-            'bin': {
-                type: 'dir',
-                children: {
-                    'ls': { type: 'file', content: 'binary for ls' },
-                    'cat': { type: 'file', content: 'binary for cat' }
-                }
-            },
-            'sbin': {
-                type: 'dir',
-                children: {
-                    'shutdown': { type: 'file', content: 'binary for shutdown' }
-                }
-            },
-            'etc': {
-                type: 'dir',
-                children: {
-                    'passwd': { type: 'file', content: 'root:x:0:0:root:/root:/bin/bash' },
-                    'hosts': { type: 'file', content: '127.0.0.1 localhost' }
-                }
-            },
-            'lib': { type: 'dir', children: {} },
-            'tmp': { type: 'dir', children: {} },
-            'var': { type: 'dir', children: { 'log': { type: 'dir', children: {} } } },
-            'usr': {
-                type: 'dir',
-                children: {
-                    'bin': { type: 'dir', children: {} },
-                    'lib': { type: 'dir', children: {} },
-                    'share': { type: 'dir', children: {} }
-                }
-            },
-            'home': {
-                type: 'dir',
-                children: {
-                    'user': {
-                        type: 'dir',
-                        children: {
-                            'notes.txt': { type: 'file', content: 'Helloo worldd!!' },
-                            'todo.txt': { type: 'file', content: 'Buy milk\nFinish project' },
-                            'readme.md': { type: 'file', content: '# Welcome to your home directory' }
-                        }
-                    }
-                }
-            }
+          'ls': { type: 'file', content: 'ELF binary' },
+          'cat': { type: 'file', content: 'ELF binary' },
+          'bash': { type: 'file', content: 'GNU bash shell binary' },
+          'grep': { type: 'file', content: 'GNU grep binary' },
+          'tar': { type: 'file', content: 'GNU tar binary' }
         }
+      },
+
+      'sbin': {
+        type: 'dir',
+        children: {
+          'init': { type: 'file', content: 'system init binary' },
+          'reboot': { type: 'file', content: 'reboot system' },
+          'shutdown': { type: 'file', content: 'shutdown system' },
+          'iptables': { type: 'file', content: 'netfilter rules manager' }
+        }
+      },
+
+      'etc': {
+        type: 'dir',
+        children: {
+          'passwd': {
+            type: 'file',
+            content:
+`root:x:0:0:root:/root:/bin/bash
+admin:x:1000:1000:System Administrator:/home/admin:/bin/bash
+www-data:x:33:33:Web Server:/var/www:/usr/sbin/nologin`
+          },
+
+          'shadow': {
+            type: 'file',
+            content:
+`root:$6$saltsalt$hashhashhash:19400:0:99999:7:::
+admin:$6$adminsalt$hashhashhash:19400:0:99999:7:::`
+          },
+
+          'hostname': { type: 'file', content: 'prod-web-03' },
+          'hosts': {
+            type: 'file',
+            content:
+`127.0.0.1   localhost
+10.0.0.5    prod-db.internal
+10.0.0.8    redis.internal`
+          },
+
+          'ssh': {
+            type: 'dir',
+            children: {
+              'sshd_config': {
+                type: 'file',
+                content:
+`Port 22
+PermitRootLogin no
+PasswordAuthentication no
+AllowUsers admin deploy`
+              },
+              'ssh_host_rsa_key': {
+                type: 'file',
+                content: '-----BEGIN RSA PRIVATE KEY-----\n<redacted>\n-----END RSA PRIVATE KEY-----'
+              }
+            }
+          },
+
+          'nginx': {
+            type: 'dir',
+            children: {
+              'nginx.conf': {
+                type: 'file',
+                content:
+`user www-data;
+worker_processes auto;
+error_log /var/log/nginx/error.log;`
+              },
+              'sites-enabled': {
+                type: 'dir',
+                children: {
+                  'default': {
+                    type: 'file',
+                    content:
+`server {
+  listen 80;
+  server_name example.com;
+  root /var/www/example;
+}`
+                  }
+                }
+              }
+            }
+          },
+
+          'cron.d': {
+            type: 'dir',
+            children: {
+              'backup': {
+                type: 'file',
+                content: '0 3 * * * root /usr/local/bin/backup.sh'
+              },
+              'cleanup': {
+                type: 'file',
+                content: '30 2 * * 0 root /usr/local/bin/cleanup_tmp.sh'
+              }
+            }
+          }
+        }
+      },
+
+      'var': {
+        type: 'dir',
+        children: {
+          'log': {
+            type: 'dir',
+            children: {
+              'syslog': {
+                type: 'file',
+                content: 'kernel: boot sequence complete...'
+              },
+              'auth.log': {
+                type: 'file',
+                content:
+`Failed password for invalid user test from 203.0.113.45
+Accepted publickey for admin from 10.1.2.3`
+              },
+              'nginx': {
+                type: 'dir',
+                children: {
+                  'access.log': {
+                    type: 'file',
+                    content: 'GET /index.html 200'
+                  },
+                  'error.log': {
+                    type: 'file',
+                    content: 'upstream timeout'
+                  }
+                }
+              },
+              'old': {
+                type: 'dir',
+                children: {
+                  'syslog.1': { type: 'file', content: 'old rotated logs...' },
+                  'syslog.2.gz': { type: 'file', content: 'compressed garbage' }
+                }
+              }
+            }
+          },
+
+          'www': {
+            type: 'dir',
+            children: {
+              'example': {
+                type: 'dir',
+                children: {
+                  'index.html': {
+                    type: 'file',
+                    content: '<h1>Welcome to Example.com</h1>'
+                  },
+                  'config.php': {
+                    type: 'file',
+                    content:
+`<?php
+$db_user = "example";
+$db_pass = "supersecretpassword";
+$db_host = "prod-db.internal";
+?>`
+                  },
+                  'uploads': {
+                    type: 'dir',
+                    children: {
+                      'avatar1.png': { type: 'file', content: '<binary>' },
+                      'tmp123.tmp': { type: 'file', content: 'junk temp file' }
+                    }
+                  }
+                }
+              }
+            }
+          },
+
+          'lib': {
+            type: 'dir',
+            children: {
+              'mysql': {
+                type: 'dir',
+                children: {
+                  'ibdata1': { type: 'file', content: 'binary mysql data' }
+                }
+              }
+            }
+          },
+
+          'tmp': {
+            type: 'dir',
+            children: {
+              '.X11-unix': { type: 'dir', children: {} },
+              'sess_abcd1234': { type: 'file', content: 'PHP session data' },
+              'debug.log': { type: 'file', content: 'temporary debug output' }
+            }
+          },
+
+          'backups': {
+            type: 'dir',
+            children: {
+              'daily': {
+                type: 'dir',
+                children: {
+                  '2024-11-01.tar.gz': { type: 'file', content: 'backup archive' },
+                  '2024-11-02.tar.gz': { type: 'file', content: 'backup archive' }
+                }
+              },
+              'old': {
+                type: 'dir',
+                children: {
+                  'legacy_server_2019.tar.gz': {
+                    type: 'file',
+                    content: 'ancient forgotten backup'
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      'home': {
+        type: 'dir',
+        children: {
+          'admin': {
+            type: 'dir',
+            children: {
+              '.bashrc': {
+                type: 'file',
+                content: 'alias ll="ls -lah"'
+              },
+              '.ssh': {
+                type: 'dir',
+                children: {
+                  'authorized_keys': {
+                    type: 'file',
+                    content: 'ssh-rsa AAAAB3Nza... admin@laptop'
+                  },
+                  'old_id_rsa': {
+                    type: 'file',
+                    content: '-----BEGIN PRIVATE KEY-----\n<oops>\n-----END PRIVATE KEY-----'
+                  }
+                }
+              },
+              'notes.txt': {
+                type: 'file',
+                content:
+`TODO:
+- rotate logs
+- remove old backups
+- migrate to new server`
+              },
+              'scripts': {
+                type: 'dir',
+                children: {
+                  'deploy.sh': {
+                    type: 'file',
+                    content: '#!/bin/bash\necho Deploying...'
+                  },
+                  'test_old.sh': {
+                    type: 'file',
+                    content: '# deprecated, do not use'
+                  }
+                }
+              }
+            }
+          },
+
+          'deploy': {
+            type: 'dir',
+            children: {
+              '.bash_history': {
+                type: 'file',
+                content: 'scp prod.tar.gz prod-web-03:/tmp'
+              }
+            }
+          }
+        }
+      },
+
+      'usr': {
+        type: 'dir',
+        children: {
+          'bin': { type: 'dir', children: {} },
+          'lib': { type: 'dir', children: {} },
+          'share': {
+            type: 'dir',
+            children: {
+              'doc': {
+                type: 'dir',
+                children: {
+                  'README': { type: 'file', content: 'System documentation' }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      'opt': {
+        type: 'dir',
+        children: {
+          'monitoring': {
+            type: 'dir',
+            children: {
+              'agent': {
+                type: 'file',
+                content: 'custom monitoring binary'
+              },
+              'config.yml': {
+                type: 'file',
+                content:
+`alerts:
+  email: ops@example.com`
+              }
+            }
+          }
+        }
+      }
     }
+  }
 };
+
 
 
 //----start of simulated syscalls-----------------------------------------------------------------------------------------------------------------
@@ -416,7 +694,7 @@ const commands = {
             else {
                 env.cwd = result.cwd;             // update env.cwd
                 printToTerminal(`Directory changed to ${env.cwd}`);
-                terminalPrompt.textContent = `${env.user}@${env.hostname}:${env.cwd}> `;
+                //terminalPrompt.textContent = `${env.user}@${env.hostname}:${env.cwd}> `;
             }
         }
     },

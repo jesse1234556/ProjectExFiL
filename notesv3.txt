@@ -1,16 +1,19 @@
 Mission 1: Honeypot Simulator: Fake files
 Mission 2: Apartment Complex: Names, cameras, etc,
 Mission 3: International Airport: flight times, payment info, credit cards
-Mission 4: Nuclear Research Lab: confidentail nuclear files, disrupt activity
 Mission 5: Military Warehouse: Inventory Counts
+Mission 4: Nuclear Research Lab: confidentail nuclear files, disrupt activity
 Mission 6: Blacksite: encrpted records
 
-Command limits per attempt
 
-8. Multi-Step Objectives (Narrative-Based)
+Command limits per attempt?
+
+Multi-Step Objectives (Narrative-Based)
 
 Instead of “get the flag”:
 
 “Restore the backup, then find who deleted the file, then access their home directory.”
 
 create ssh into peoples things with like passwords hidden in files
+
+Token hijack package, admin server logs in every 10 seconds, hijack their session/token
