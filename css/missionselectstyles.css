@@ -28,6 +28,7 @@ body {
     /*justify-content: space-between;*/
     transform: translateX(-80%); /* move offscreen to the left */
     transition: transform 0.3s ease; /* smooth animation */
+    user-select: none; /* Standard */
 }
 
 .sidebar.active {
@@ -45,10 +46,26 @@ body {
     flex-direction: row-reverse;
 }
 
+.item:hover {
+    background: #0a0c33; /* slightly lighter than #02041d */
+    box-shadow: 0 0 10px #00f0ff, 0 0 15px #00f0ff inset; /* stronger glow */
+    border-color: #00ffff; /* brighter neon cyan */
+    cursor: pointer; /* indicates it's interactive */
+    transition: all 0.1s ease; /* smooth transition */
+}
+
+.item.selected {
+  background-color: #161a66;; /* lighter color */
+  transition: background-color 0.3s ease;
+}
+
+
+
 .sidenumber {
+    width: 36px;
     margin: 10px;
     font-size: 30px;
-    text-align: right;
+    text-align: center;
     vertical-align:middle;
 }
 
@@ -56,4 +73,10 @@ body {
     width: 35px;
     height: 35px;
     color: orange;
+}
+
+.itemtext{
+    margin-left: 15px;
+    font-size: x-large;
+
 }
