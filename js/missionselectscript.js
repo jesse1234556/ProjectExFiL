@@ -1,12 +1,12 @@
-const sidebar = document.querySelector('.sidebar');
-const button = document.getElementById('myButton');
+const startbutton = document.getElementById("start");
+const homebutton = document.getElementById("home");
 
-sidebar.addEventListener("mouseenter", () => {
-  sidebar.classList.toggle('active');
+startbutton.addEventListener("click", () => {
+  console.log("clicked");
 });
 
-sidebar.addEventListener("mouseleave", () => {
-  sidebar.classList.toggle('active');
+homebutton.addEventListener("click", () => {
+  window.location.href = `dashboard.html`;
 });
 
 console.log(GameSave.state.highestMission);
@@ -26,8 +26,6 @@ const missions = [
 ];
 
 const missionsdiv = missions.map(mission => mission.parentElement);
-console.log(missionsdiv);
-
 // Lock/unlock missions
 missions.forEach((sidenumberDiv, index) => {
   if (index <= highestMission) {
@@ -40,8 +38,11 @@ missions.forEach((sidenumberDiv, index) => {
     sidenumberDiv.classList.add('locked');
   }
 });
-let currentlySelected = null; // mission number
-let previouslySelectedDiv = null; // keep track of the selected .item
+
+// Set currentlySelected and previouslySelectedDiv to the highest unlocked mission
+currentlySelected = highestMission + 1; // missions are 1-indexed
+previouslySelectedDiv = missionsdiv[highestMission];
+previouslySelectedDiv.classList.add("selected");
 
 missionsdiv.forEach((itemDiv, index) => {
   itemDiv.addEventListener("click", () => {

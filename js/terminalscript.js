@@ -123,26 +123,14 @@ body.addEventListener('keydown', (event) => {
 });
 
 
-
-//i dont think this is needed
-function GetInputLineText() {
-    // Get the full text from the terminal input
-    const fullText = terminalInput.textContent;
-    
-    // Find the index of the last '> ' and get everything after it
-    const index = fullText.lastIndexOf(' ');
-
-    // Return the text after the '> ' 
-    return fullText.substring(index + 1);
-    
-}
-
 //deal with this later
+/*
 terminalInput.addEventListener('paste', (e) => {
   e.preventDefault(); // Stop the default paste
   const text = (e.clipboardData || window.clipboardData).getData('text/plain');
   document.execCommand('insertText', false, text); // Insert plain text
 });
+*/
 
 
 // Focus input when anywhere is clicked or a keypress is detected,
@@ -1074,7 +1062,7 @@ commands.help = {
 let historyIndex = null; // tracks current position in history
 
 
-
+//input handling
 body.addEventListener('keydown', function(e) {
  if (e.key === 'Tab') {
     e.preventDefault(); // Prevent browser tabbing
@@ -1225,23 +1213,11 @@ if (e.key === 'Enter') {
 
 })
 
-//Old CaretAtEnd function
-/*
-function placeCaretAtEnd(el) {
-    const range = document.createRange();
-    const sel = window.getSelection();
-    range.selectNodeContents(el);
-    range.collapse(false);
-    sel.removeAllRanges();
-    sel.addRange(range);
-    el.focus();
-}
-*/
 // Welcome message
 printToTerminal('Welcome to the JS Terminal! Type "help" for commands.');
 //show empty terminal input line
 RenderLineText();
-console.log(GetInputLineText());
+
 
 
 

@@ -15,7 +15,7 @@ body {
      overflow: hidden; /* optional if you never want scrolling */
 }
 
-
+/* Sidebar */
 .sidebar {
     margin-left: 5px;
     display: flex;
@@ -25,15 +25,10 @@ body {
     left: 0;
     height: 100vh;
     width: 250px;
-    /*justify-content: space-between;*/
-    transform: translateX(-80%); /* move offscreen to the left */
-    transition: transform 0.3s ease; /* smooth animation */
-    user-select: none; /* Standard */
+    user-select: none;
+    z-index: 1000; /* ensures it sits above page content */
 }
 
-.sidebar.active {
-  transform: translateX(0);
-}
 
 .item {
     background: #02041d;
@@ -47,8 +42,8 @@ body {
 }
 
 .item:hover {
-    background: #0a0c33; /* slightly lighter than #02041d */
-    box-shadow: 0 0 10px #00f0ff, 0 0 15px #00f0ff inset; /* stronger glow */
+    background: #0a0c33; 
+    box-shadow: 0 0 10px #00f0ff, 0 0 15px #00f0ff inset; 
     border-color: #00ffff; /* brighter neon cyan */
     cursor: pointer; /* indicates it's interactive */
     transition: all 0.1s ease; /* smooth transition */
@@ -79,4 +74,100 @@ body {
     margin-left: 15px;
     font-size: x-large;
 
+}
+.missiontitle {
+    position: absolute;
+    top: 7.5%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: xx-large;
+}
+
+.missionstars {
+    margin-top: 5px;
+    position: relative;
+    font-size: xx-large;
+    text-align: center;
+}
+.centerflexwrapper {
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.centerflexbox {
+    width: 45%;
+    display: flex;
+    flex-direction: row; /* side by side */
+    gap: 10px; /* optional spacing between items */
+}
+
+.itemwrapper {
+    text-align: center;
+    display: flex;
+    flex-direction: column; /* stack header on top of box */
+    flex: 1; /* take equal horizontal space */
+}
+
+
+
+.missiondescription,
+.missiontools {
+    font-size: larger;
+    height: 25vh; /* or whatever fixed height you want */
+    background-color: #02041d;
+    border: 2px solid #00f0ff;
+    box-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff inset;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.homebutton{
+    margin: 50px;
+    width: 50px;
+    height: 50px;
+    padding: 10px;
+    background-color: #02041d;
+    border: 2px solid #00f0ff;
+    box-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff inset;
+    position: fixed;
+    top: 0;       /* distance from the top */
+    right: 0;     /* distance from the right */
+    z-index: 100; /* optional, ensures it’s above other elements */
+}
+
+.homebutton:hover {
+    background-color: #0a0c33;
+    box-shadow: 0 0 10px #00f0ff, 0 0 15px #00f0ff inset; 
+    box-shadow: 0 0 15px #00f0ff, 0 0 15px #00f0ff inset; 
+    border-color: #00ffff; /* brighter neon cyan */
+    cursor: pointer; /* indicates it's interactive */
+    transition: all 0.1s ease; /* smooth transition */
+}
+.startbutton {
+    display: flex;
+    align-items: center;      /* vertical */
+    justify-content: center;
+    background-color: #02041d;
+    border: 2px solid #00f0ff;
+    box-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff inset;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%) ;
+    bottom: 10%;
+    width: 15%;
+    height: 10%;
+    font-size: x-large;
+}
+
+.startbutton:hover {
+    background-color: #0a0c33;
+    transform: translateX(-50%);
+    box-shadow: 0 0 10px #00f0ff, 0 0 15px #00f0ff inset; 
+    box-shadow: 0 0 15px #00f0ff, 0 0 15px #00f0ff inset; 
+    border-color: #00ffff; /* brighter neon cyan */
+    cursor: pointer; /* indicates it's interactive */
+    transition: all 0.1s ease; /* smooth transition */
 }
