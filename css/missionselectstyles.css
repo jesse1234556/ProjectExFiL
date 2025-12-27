@@ -12,7 +12,8 @@ body {
     color: #00f0ff; /* neon cyan-blue */
     margin: 0;
     height: 100vh;
-     overflow: hidden; /* optional if you never want scrolling */
+    overflow: hidden; /* optional if you never want scrolling */
+    user-select: none;
 }
 
 /* Sidebar */
@@ -89,14 +90,16 @@ body {
     font-size: xx-large;
     text-align: center;
 }
+
 .centerflexwrapper {
-    display: flex;
+    display: flex; 
     height: 100vh;
     justify-content: center;
-    align-items: center;
+    align-items: center; 
 }
 
 .centerflexbox {
+     user-select: text;
     width: 45%;
     display: flex;
     flex-direction: row; /* side by side */

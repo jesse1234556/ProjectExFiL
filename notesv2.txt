@@ -15,3 +15,16 @@ Logs.json is alright to keep since its rarely checked and has too much data to p
 but just to be sure we are going to be doing some obsfucation. 
 Install my package 'RandomLogs' are then run the RandLogs command to create a bunch of fake logs,
 rename the original Logs.json to be "Logs85.json" so I know where it is. 
+
+
+Mission 3 ideas
+
+Touch command too many times sets off the intrusion detection system (hackerman wants this to happen)
+
+
+Split into 3rds?
+Ideas for mission play sidebar
+
+Mission objectives
+Needed commands (with clickable pop up manual?)
+Help button (hacker gives you next steps?)

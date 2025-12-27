@@ -1,9 +1,9 @@
-Mission 1: Honeypot Simulator: Fake files
-Mission 2: Apartment Complex: Names, cameras, etc,
-Mission 3: International Airport: flight times, payment info, credit cards
-Mission 5: Military Warehouse: Inventory Counts
-Mission 4: Nuclear Research Lab: confidentail nuclear files, disrupt activity
-Mission 6: Blacksite: encrpted records
+Mission 1: Orientation Protocol: Literal tutorial
+Mission 2: Honeypot Simulator: Fake files, slightly more 'real' feel 
+Mission 3: Apartment Complex: Names, cameras, etc,
+Mission 4: International Airport: flight times, payment info, credit cards
+Mission 5: Nuclear Research Lab: confidentail nuclear files, disrupt activity
+Mission 6: Blacksite: encrpted records or something idek, 
 
 
 Command limits per attempt?
@@ -17,3 +17,6 @@ Instead of “get the flag”:
 create ssh into peoples things with like passwords hidden in files
 
 Token hijack package, admin server logs in every 10 seconds, hijack their session/token
+
+Brute force passwords
+
