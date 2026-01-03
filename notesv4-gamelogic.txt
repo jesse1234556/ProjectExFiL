@@ -1,0 +1,21 @@
+basic objectives, same every level used multiple times:
+
+upload command: Takes 1 file, acts like cp. Used for specific file objective
+access directory: ticks when you access a specfic directory, will need to have some kind of 
+file not exist/delete file: ticks when file is deleted or doesnt exist, which should it be? I should check for if file exists at every command execute
+login as someone, access user/elevate permissions
+kill/stop: stop a process 
+
+Summary Table: Basic Objective Library
+Objective Type	Success Trigger	Example Mission
+Data Theft	Target file exists in /home/player/	"Steal the bank_details.csv file."
+Sabotage	File path root/sys/boot.conf == null	"Delete the system boot config."
+Infiltration	Current User == admin	"Escalate privileges to root."
+Silence Alarm	Process sys_monitor is not running	"Kill the monitoring service."
+Discovery	ls executed in /hidden/vault/	"Find the hidden vault directory."
+
+
+some levels will need custom built objective logic, for instance, abstract 1 off concepts like create 10 copies of a specific file. 
+
+
+Level phases determine dialogue.

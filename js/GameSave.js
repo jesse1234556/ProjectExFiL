@@ -43,6 +43,9 @@ window.GameSave = (() => {
     return save;
   }
 
+  loadGame();
+  saveGame();
+
   return {
     load: loadGame,
     save: saveGame,
@@ -52,3 +55,4 @@ window.GameSave = (() => {
     }
   };
 })();
+

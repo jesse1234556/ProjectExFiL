@@ -2,6 +2,12 @@ const terminalInput = document.getElementById('InputLine');
 const terminal = document.getElementById('terminal');
 const body = document.body;
 
+let inmission = false; 
+
+if (window.location.pathname.endsWith("missionplay.html")) {
+  inmission = true; 
+  console.log(inmission);
+} else console.log(inmission);
 
 const env = {
   user: 'Guest',              // username
@@ -1227,16 +1233,34 @@ const dialogueOverlay = document.getElementById("dialogueOverlay");
 const dialogueBox = document.getElementById("dialogueBox");
 const closeBtn = document.getElementById("closeDialogue");
 const dialogueTerminal = document.getElementById("dialogueTerminal");
+const continueButton = document.getElementById("continuebuttondialogue")
 
-closeBtn.addEventListener("click", () => {
+let canContinue = false;
+let isEndOfDialogue = false; 
+/*
+if (canContinue) {
+  continueButton.style.display = "flex";
+  if (isEndOfDialogue) {
+    continueButton.innerHTML = "Close";
+  }
+} else {continueButton.style.display = "none";}
+*/ //only runs once dumbie 
+function closeDialogue(){
     dialogueOverlay.style.display = "none";
     dialogueBox.style.display = "none";
     dialogueTerminal.innerHTML = "";
+    canContinue = false;
+    isEndOfDialogue = false;
+}
+
+closeBtn.addEventListener("click", () => {
+    closeDialogue();
 });
 
 function openDialogue() {
     dialogueOverlay.style.display = "block";
     dialogueBox.style.display = "block";
+    canContinue = false;
 }
 
 // random symbols for the decoding effect
@@ -1283,9 +1307,16 @@ function animateLine(line, speed = 35) {
 
 
 async function showDialogueLines(lines, delay = 500) {
+    openDialogue();
     for (let line of lines) {
         await animateLine(line);
         await new Promise(r => setTimeout(r, delay));
     }
 }
 
+showDialogueLines([
+            "Hello, operator.",
+            "I’ve been observing your activity.",
+            "You opened the wrong terminal.",
+            "Now your going to help me.",
+        ]);

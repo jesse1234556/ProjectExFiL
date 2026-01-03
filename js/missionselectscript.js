@@ -1,10 +1,6 @@
 const startbutton = document.getElementById("start");
 const homebutton = document.getElementById("home");
 
-startbutton.addEventListener("click", () => {
-  console.log("clicked");
-});
-
 homebutton.addEventListener("click", () => {
   window.location.href = `dashboard.html`;
 });
@@ -44,6 +40,9 @@ currentlySelected = highestMission + 1; // missions are 1-indexed
 previouslySelectedDiv = missionsdiv[highestMission];
 previouslySelectedDiv.classList.add("selected");
 
+
+
+
 missionsdiv.forEach((itemDiv, index) => {
   itemDiv.addEventListener("click", () => {
     const sidenumberDiv = itemDiv.querySelector(".sidenumber");
@@ -68,6 +67,10 @@ missionsdiv.forEach((itemDiv, index) => {
 });
 
 
+startbutton.addEventListener("click", () => {
+  let missionNumber = currentlySelected;
+  window.location.href = `missionplay.html?mission=${missionNumber}`;
+});
 
 
 function jiggle(element) {
