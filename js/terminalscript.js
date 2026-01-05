@@ -792,6 +792,7 @@ const commands = {
             "I’ve been observing your activity.",
             "You opened the wrong terminal.",
             "Now your going to help me.",
+            
         ]);
         }
     },
@@ -1229,11 +1230,21 @@ RenderLineText();
 
 //dialogue box stuff
 
+const DIALOGUE_COMMANDS = {
+    PAUSE: "*PAUSE*",
+    END: "*END*"
+};
+
+
 const dialogueOverlay = document.getElementById("dialogueOverlay");
 const dialogueBox = document.getElementById("dialogueBox");
 const closeBtn = document.getElementById("closeDialogue");
 const dialogueTerminal = document.getElementById("dialogueTerminal");
 const continueButton = document.getElementById("continuebuttondialogue")
+
+continueButton.style.userSelect = "none";
+
+let dialogueSession = 0;
 
 let canContinue = false;
 let isEndOfDialogue = false; 
@@ -1244,8 +1255,9 @@ if (canContinue) {
     continueButton.innerHTML = "Close";
   }
 } else {continueButton.style.display = "none";}
-*/ //only runs once dumbie 
+*/ //only runs once dumbie, must be in a loop or event
 function closeDialogue(){
+    dialogueSession++;
     dialogueOverlay.style.display = "none";
     dialogueBox.style.display = "none";
     dialogueTerminal.innerHTML = "";
@@ -1258,6 +1270,7 @@ closeBtn.addEventListener("click", () => {
 });
 
 function openDialogue() {
+    dialogueSession++;
     dialogueOverlay.style.display = "block";
     dialogueBox.style.display = "block";
     canContinue = false;
@@ -1265,12 +1278,11 @@ function openDialogue() {
 
 // random symbols for the decoding effect
 const symbols = "!@#$%^&*()_+=-{}[]<>/?|~";
-function animateLine(line, speed = 35) {
+function animateLine(line, speed = 35, sessionId) {
     return new Promise(resolve => {
         const lineDiv = document.createElement("div");
         dialogueTerminal.appendChild(lineDiv);
 
-        // create scrambled version same length as real line
         let buffer = Array.from(line).map(() =>
             symbols[Math.floor(Math.random() * symbols.length)]
         );
@@ -1279,25 +1291,27 @@ function animateLine(line, speed = 35) {
 
         const interval = setInterval(() => {
 
-            // reveal next actual character
+            // CANCEL CHECK
+            if (sessionId !== dialogueSession) {
+                clearInterval(interval);
+                resolve();
+                return;
+            }
+
             buffer[index] = line[index];
 
-            // re‑scramble remaining characters
             for (let i = index + 1; i < line.length; i++) {
                 buffer[i] = symbols[Math.floor(Math.random() * symbols.length)];
             }
 
             lineDiv.textContent = buffer.join("");
-
-            // scroll terminal to bottom so new line appears at bottom
             dialogueTerminal.scrollTop = dialogueTerminal.scrollHeight;
 
             index++;
 
             if (index >= line.length) {
                 clearInterval(interval);
-                lineDiv.textContent = line; // finalize line
-                dialogueTerminal.scrollTop = dialogueTerminal.scrollHeight;
+                lineDiv.textContent = line;
                 resolve();
             }
 
@@ -1305,18 +1319,83 @@ function animateLine(line, speed = 35) {
     });
 }
 
-
-async function showDialogueLines(lines, delay = 500) {
+async function showDialogueLines(lines, delay = 350) {
     openDialogue();
-    for (let line of lines) {
-        await animateLine(line);
-        await new Promise(r => setTimeout(r, delay));
+    const sessionId = dialogueSession;
+
+    continueButton.style.display = "none";
+
+    for (let i = 0; i < lines.length; i++) {
+
+        if (sessionId !== dialogueSession) return;
+
+        const line = lines[i];
+
+        // ---- PAUSE COMMAND ----
+        if (line === DIALOGUE_COMMANDS.PAUSE) {
+            continueButton.textContent = "Continue";
+            continueButton.style.display = "flex";
+
+            await waitForContinue(sessionId);
+
+            continueButton.style.display = "none";
+            continue;
+        }
+
+        // ---- END COMMAND ----
+        if (line === DIALOGUE_COMMANDS.END) {
+            continueButton.textContent = "Close";
+            continueButton.style.display = "flex";
+
+            await waitForContinue(sessionId);
+            closeDialogue();
+            return;
+        }
+
+        // ---- NORMAL LINE ----
+        await animateLine(line, 35, sessionId);
+
+// wait ONLY if the next entry is a normal line
+const next = lines[i + 1];
+if (next && !Object.values(DIALOGUE_COMMANDS).includes(next)) {
+    await new Promise(r => setTimeout(r, delay));
+}
+
     }
+
+    // fallback end if no *END* token
+    continueButton.textContent = "Close";
+    continueButton.style.display = "flex";
+    await waitForContinue(sessionId);
+closeDialogue();
+}
+
+function waitForContinue(sessionId) {
+    return new Promise(resolve => {
+
+        function handler() {
+            continueButton.removeEventListener("click", handler);
+            resolve();
+        }
+
+        continueButton.addEventListener("click", handler);
+
+        // auto-resolve if dialogue is closed mid-wait
+        const check = setInterval(() => {
+            if (sessionId !== dialogueSession) {
+                clearInterval(check);
+                continueButton.removeEventListener("click", handler);
+                resolve();
+            }
+        }, 50);
+    });
 }
 
 showDialogueLines([
-            "Hello, operator.",
-            "I’ve been observing your activity.",
-            "You opened the wrong terminal.",
-            "Now your going to help me.",
-        ]);
+    "Hello, operator.",
+    "I’ve been observing your activity.",
+    "*PAUSE*",
+    "You opened the wrong terminal.",
+    "Now you're going to help me.",
+    "*END*"
+]);
