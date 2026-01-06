@@ -20,6 +20,14 @@
     z-index: 100; /* optional, ensures it’s above other elements */
 }
 
+.homebutton:hover {
+    background-color: #0a0c33;
+    box-shadow: 0 0 10px #00f0ff, 0 0 15px #00f0ff inset; 
+    box-shadow: 0 0 15px #00f0ff, 0 0 15px #00f0ff inset; 
+    border-color: #00ffff; /* brighter neon cyan */
+    cursor: pointer; /* indicates it's interactive */
+    transition: all 0.1s ease; /* smooth transition */
+}
 body {
     background: #181927;
     font-family: Comfortaa, Arial, sans-serif;

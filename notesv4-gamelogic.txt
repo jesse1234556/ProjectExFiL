@@ -1,21 +1,32 @@
 basic objectives, same every level used multiple times:
 
 upload command: Takes 1 file, acts like cp. Used for specific file objective
-access directory: ticks when you access a specfic directory, will need to have some kind of 
-file not exist/delete file: ticks when file is deleted or doesnt exist, which should it be? I should check for if file exists at every command execute
-login as someone, access user/elevate permissions
+access directory: ticks when you access a specfic directory (path included so you cant just mkdir > cd into the name of it)
+file not exist/delete file: ticks when file doesnt exist (player deleted it)
+login as someone: access user/elevate permissions
 kill/stop: stop a process 
 
 Summary Table: Basic Objective Library
-Objective Type	Success Trigger	Example Mission
 Data Theft	Target file exists in /home/player/	"Steal the bank_details.csv file."
+Access Directory Directory in file system, access it. 
 Sabotage	File path root/sys/boot.conf == null	"Delete the system boot config."
 Infiltration	Current User == admin	"Escalate privileges to root."
-Silence Alarm	Process sys_monitor is not running	"Kill the monitoring service."
-Discovery	ls executed in /hidden/vault/	"Find the hidden vault directory."
-
+Proccess kill	Process sys_monitor is not running	"Kill the monitoring service."
 
 some levels will need custom built objective logic, for instance, abstract 1 off concepts like create 10 copies of a specific file. 
 
 
-Level phases determine dialogue.
+Level phases determine dialogue. For instance, phase 1 of level 1 will have 3 objectives like (access dir Z, copy file You to location, upload file X) phase 1 will also have dialogue at the beginning. 
+
+Level data object needs to include these, and engine needs to know how to interperet it. 
+
+simple:
+Required commands: Just text data that needs to be parsed and displayed
+file system: an object, already defined just plug it in (I think its this simple but idk)
+Information: Repeat most recent dialogue
+
+medium difficult to implement:
+dialogue in general: not completly sure how to implement this. has function that displays the dialogue so shouldnt be hard, the function just takes strings seperated by commas for line seperation
+
+hard to implement: 
+Objectives, needs to range from repeatable ones like upload file or access directory to more custom stuff like create 10 copies of a specific file. 
