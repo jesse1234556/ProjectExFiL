@@ -161,230 +161,16 @@ body{
 
 .commandflexbox {
     display: flex;
-    /* Default is row; if you want them stacked like blocks, use: flex-direction: column; */
-    border: 1px solid #ccc; /* Added just to visualize the boxes */
     height: 100%; /* This tells it to take up 100% of the container it's in */
 
 }
 
 .commandcolumn {
-    flex: 1;                /* Grow to fill 100% of the parent's width/height */
-    display: flex;          /* Allows internal alignment */
-    justify-content: center; /* Centers text horizontally */
-    align-items: center;    /* Centers text vertically */
-    border: 1px solid #ccc; /* Added just to visualize the boxes */
-}
-
-#objectivecontent {
-    margin-left: 25px;
-}
-
-.sidebarcontentimg {
-    display: flex;
-    flex-direction: row;
+    column-count: 2;        /* Number of columns */
+    column-gap: 20px;       /* Space between columns */
     width: 100%;
-    flex: 1;
-}
-
-/* LEFT HALF (IMAGE) */
-.imgwrap {
-    width: 150px;
-    flex: 0 0 150px;
-    overflow: hidden;
-}
-
-.imgwrap img {
-    width: 100%;
-    height: auto;        /* preserve aspect ratio */
-    min-height: 100%;    /* ensure it fills vertically when possible */
-    object-fit: contain; /* DO NOT crop width */
-    object-position: left bottom;
-}
-
-/* RIGHT HALF (EMPTY) */
-.replaybuttonimgwrap {
-    height: 100%;
-    display: flex;
-    justify-content: center; /* horizontal center */
-    align-items: center;     /* vertical center */
-    overflow: hidden;        /* crop any overflow */
-}
-
-@font-face {
-    font-family: 'Comfortaa';
-    src: url('../assets/Comfortaa-VariableFont_wght.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-html, body {
-  overflow-x: hidden;
-}
-
-body{
-    margin-left: 250px;
-}
-
-.terminal {
-    overflow-y: scroll;       /* enables scrolling */
-    scrollbar-width: none;    /* Firefox */
-    background: #181927;     /* darker bluish background */
-    color: #00deee;           /* neon cyan text */
-    font-family: 'Consolas', monospace;
-    padding: 20px;
-    margin: 0px;
-    width: calc(95vw - 250px);
-    height: 90vh;
-    overflow-y: auto;
-    position: relative;
-    overflow-wrap: break-word;
-    word-break: break-all;
-}
-
-.sidebar {
-    margin-right: 5px;
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 250px;
-    user-select: none;
-    z-index: 1000;
-}
-
-
-.sidetitle {
-    display: flex;
-    align-items: center;     /* vertical center */
-    justify-content: center; /* horizontal center */
-
-    padding: 10px 0;
-    width: 100%;
-    font-family: 'Comfortaa';
-    font-size: larger;
-    border: 1px solid #00f0ff;
-}
-
-.objectives,.neededcommands,.hackerhelp {
+    text-align: center;
    
-    background: #02041d;
-    border: 2px solid #00f0ff;
-    box-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff inset;
-    flex: 1;
-    display: flex;
-    justify-content: start;
-    flex-direction: column;
-    align-items: center;
-}
-
-
-.dialogueBox {
-    overflow: visible;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 720px;
-    height: 269px;
-    background-image: url("../assets/HackerDialogueBorder.png");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    padding: 0;
-    display: none;
-    z-index: 9999;
-    
-}
-
-.close-btn {
-    position: absolute;
-    top: 8px;
-    right: 12px;
-    background: transparent;
-    border: none;
-    color: #00f0ff;
-    font-size: 1.7em;
-    cursor: pointer;
-}
-
-.dialogueTerminal {
-    position: absolute;
-    bottom: 17px;
-    left: 25px;
-    right: 235px;
-    top: 24px;
-
-    display: flex;
-    flex-direction: column; /* normal flow top → bottom */
-    justify-content: flex-end; /* push content to bottom initially */
-
-    overflow-y: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.dialogueTerminal::-webkit-scrollbar { display: none; }
-
-.dialogueTerminal div {
-    white-space: pre-wrap;
-    font-family: 'Glitchy', 'Fira Mono', monospace;
-    color: #00f0ff; /* neon cyan text */
-    font-size: 20px;
-    line-height: 1.15em;
-}
-
-#continuebuttondialogue:hover {
-    background-color: #0a0c33;
-    box-shadow: 0 0 10px #00f0ff, 0 0 15px #00f0ff inset; 
-    box-shadow: 0 0 15px #00f0ff, 0 0 15px #00f0ff inset; 
-    border-color: #00ffff; /* brighter neon cyan */
-    cursor: pointer; /* indicates it's interactive */
-    transition: all 0.05s ease; /* smooth transition */
-}
-
-#continuebuttondialogue {
-    user-select: none;
-    font-family: Comfortaa;
-    font-size: larger;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    vertical-align: center;
-    position: absolute;
-    width: 200px;
-    height: 50px;
-    background-color: #02041d;
-    border: 2px solid #00f0ff;
-    box-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff inset;
-    top: calc(100% + 15px);
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.sidebarcontent {
-    width: 100%;
-    height: 100%;
-    padding: 10px;
-    font-family: 'Comfortaa';
-    font-size:medium
-}
-
-.commandflexbox {
-    display: flex;
-    /* Default is row; if you want them stacked like blocks, use: flex-direction: column; */
-    border: 1px solid #ccc; /* Added just to visualize the boxes */
-    height: 100%; /* This tells it to take up 100% of the container it's in */
-
-}
-
-.commandcolumn {
-    flex: 1;                /* Grow to fill 100% of the parent's width/height */
-    display: flex;          /* Allows internal alignment */
-    justify-content: center; /* Centers text horizontally */
-    align-items: center;    /* Centers text vertically */
-    border: 1px solid #ccc; /* Added just to visualize the boxes */
 }
 
 #objectivecontent {
@@ -395,6 +181,8 @@ body{
     display: flex;
     flex-direction: row;
     width: 100%;
+    height: 100%;
+
 }
 
 /* LEFT HALF (IMAGE) */
@@ -409,25 +197,18 @@ body{
 .imgwrap img {
     width: 100%;
     height: auto;        /* preserve aspect ratio */
-    min-height: 100%;    /* ensure it fills vertically when possible */
     object-fit: contain; /* DO NOT crop width */
     object-position: left bottom;
 }
 .replaybuttonimgwrap {
-    width: 100px;              /* fixed width of the wrapper */
-    height: auto;            /* fixed height of the wrapper */
-    display: flex;             
-    justify-content: center;    /* horizontal center */
-    align-items: center;        /* vertical center */
-    overflow: hidden;           /* crop any overflow */
-    flex: 1;                /* Grow to fill 100% of the parent's width/height */
-    display: flex;          /* Allows internal alignment */
-    justify-content: center; /* Centers text horizontally */
-    align-items: center;    /* Centers text vertically */
-    border: 1px solid #ccc; /* Added just to visualize the boxes */
-    margin: 10px;
-    margin-top: 50px;
-    margin-bottom: 50px;
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+    margin: 50px 10px;
+
     background-color: #080c63;
     border: 2px solid #00f0ff;
     box-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff inset;
@@ -435,6 +216,7 @@ body{
 
 .replaybuttonimgwrap img {
     
+    transform: rotate(25deg) scaleX(-1);
     width: 50%;
     height: 50%;
     object-fit: contain;
