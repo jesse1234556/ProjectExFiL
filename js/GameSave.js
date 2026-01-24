@@ -43,12 +43,20 @@ window.GameSave = (() => {
     return save;
   }
 
+    function resetProgress() {
+    localStorage.removeItem(SAVE_KEY);
+    currentSave = defaultSave();
+    saveGame();
+  }
+
+
   loadGame();
   saveGame();
 
   return {
     load: loadGame,
     save: saveGame,
+    resetProgress,
     get state() {
       loadGame();      // ensure it's loaded
       return currentSave.state;

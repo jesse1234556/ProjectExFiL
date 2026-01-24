@@ -3,6 +3,11 @@ const terminal = document.getElementById('terminal');
 const body = document.body;
 
 let inmission = false; 
+let currentmissionphase; 
+
+if (inmission == true){
+  currentmissionphase = 1; 
+}
 
 if (window.location.pathname.endsWith("missionplay.html")) {
   inmission = true; 
@@ -1391,11 +1396,20 @@ function waitForContinue(sessionId) {
     });
 }
 
-showDialogueLines([
-    "Hello, operator.",
-    "I’ve been observing your activity.",
-    "*PAUSE*",
-    "You opened the wrong terminal.",
-    "Now you're going to help me.",
-    "*END*"
-]);
+const missiondialogue = {
+  
+    mission1: {
+      name: "Orientation Protocol", 
+      phase1: ["Hello, operator.",
+              "I’ve been observing your activity.",
+              "*PAUSE*",
+              "You opened the wrong terminal.",
+              "Now you're going to help me.",
+              "*END*"], 
+      phase2: "",
+    }
+  }
+
+  if (inmission){
+    showDialogueLines(missiondialogue.mission1.phase1);
+  }

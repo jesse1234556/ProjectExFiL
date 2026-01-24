@@ -12,3 +12,4 @@ homebutton.addEventListener("click",  () => {
 missionsdiv.addEventListener("click", () => {
     window.location.href = "missionselect.html";
 });
+
