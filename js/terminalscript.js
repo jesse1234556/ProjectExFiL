@@ -5,14 +5,23 @@ const body = document.body;
 let inmission = false; 
 let currentmissionphase; 
 
-if (inmission == true){
-  currentmissionphase = 1; 
-}
+/*
+//add when publishing 
+window.addEventListener('beforeunload', function (e) {
+    // Modern browsers ignore the custom message, but it's still required to trigger the prompt
+    e.preventDefault(); // standard way to trigger the prompt
+    e.returnValue = ''; // Chrome requires setting returnValue to a non-undefined value
+});*/
+
 
 if (window.location.pathname.endsWith("missionplay.html")) {
   inmission = true; 
-  console.log(inmission);
-} else console.log(inmission);
+} 
+
+if (inmission == true){
+  currentmissionphase = 1; 
+  const commandcolumn = document.getElementById("commandcolumn");
+}
 
 const env = {
   user: 'Guest',              // username
@@ -94,6 +103,7 @@ function startCursorBlink() {
 
 startCursorBlink();
 
+
 // Assuming terminalInput is your input container element
 body.addEventListener('keydown', (event) => {
    //event.preventDefault(); // prevent default browser behavior (like scrolling) disabled for now 
@@ -121,6 +131,11 @@ body.addEventListener('keydown', (event) => {
     case 'End':
         cursorIndex = inputText.length;  // Move cursor to end
         break;
+     case '/':
+            event.preventDefault(); // Prevent browser Quick Find
+            inputText.splice(cursorIndex, 0, '/');
+            cursorIndex++;
+            break;
     default:
         // Only handle single-character keys (letters, numbers, symbols)
         if (event.key.length === 1) {
@@ -147,29 +162,16 @@ terminalInput.addEventListener('paste', (e) => {
 // Focus input when anywhere is clicked or a keypress is detected,
 // but ignore if Ctrl or Alt is held
 
-
 const fs = {
+  user: 'Guest',
+  hostname: 'ProjectExFiL',
   '/': {
     type: 'dir',
     children: {
       'bin': {
         type: 'dir',
         children: {
-          'ls': { type: 'file', content: 'ELF binary' },
-          'cat': { type: 'file', content: 'ELF binary' },
-          'bash': { type: 'file', content: 'GNU bash shell binary' },
-          'grep': { type: 'file', content: 'GNU grep binary' },
-          'tar': { type: 'file', content: 'GNU tar binary' }
-        }
-      },
-
-      'sbin': {
-        type: 'dir',
-        children: {
-          'init': { type: 'file', content: 'system init binary' },
-          'reboot': { type: 'file', content: 'reboot system' },
-          'shutdown': { type: 'file', content: 'shutdown system' },
-          'iptables': { type: 'file', content: 'netfilter rules manager' }
+          'ls': { type: 'file', content: 'ELF binary' }
         }
       },
 
@@ -180,296 +182,19 @@ const fs = {
             type: 'file',
             content:
 `root:x:0:0:root:/root:/bin/bash
-admin:x:1000:1000:System Administrator:/home/admin:/bin/bash
-www-data:x:33:33:Web Server:/var/www:/usr/sbin/nologin`
-          },
-
-          'shadow': {
-            type: 'file',
-            content:
-`root:$6$saltsalt$hashhashhash:19400:0:99999:7:::
-admin:$6$adminsalt$hashhashhash:19400:0:99999:7:::`
-          },
-
-          'hostname': { type: 'file', content: 'prod-web-03' },
-          'hosts': {
-            type: 'file',
-            content:
-`127.0.0.1   localhost
-10.0.0.5    prod-db.internal
-10.0.0.8    redis.internal`
-          },
-
-          'ssh': {
-            type: 'dir',
-            children: {
-              'sshd_config': {
-                type: 'file',
-                content:
-`Port 22
-PermitRootLogin no
-PasswordAuthentication no
-AllowUsers admin deploy`
-              },
-              'ssh_host_rsa_key': {
-                type: 'file',
-                content: '-----BEGIN RSA PRIVATE KEY-----\n<redacted>\n-----END RSA PRIVATE KEY-----'
-              }
-            }
-          },
-
-          'nginx': {
-            type: 'dir',
-            children: {
-              'nginx.conf': {
-                type: 'file',
-                content:
-`user www-data;
-worker_processes auto;
-error_log /var/log/nginx/error.log;`
-              },
-              'sites-enabled': {
-                type: 'dir',
-                children: {
-                  'default': {
-                    type: 'file',
-                    content:
-`server {
-  listen 80;
-  server_name example.com;
-  root /var/www/example;
-}`
-                  }
-                }
-              }
-            }
-          },
-
-          'cron.d': {
-            type: 'dir',
-            children: {
-              'backup': {
-                type: 'file',
-                content: '0 3 * * * root /usr/local/bin/backup.sh'
-              },
-              'cleanup': {
-                type: 'file',
-                content: '30 2 * * 0 root /usr/local/bin/cleanup_tmp.sh'
-              }
-            }
-          }
-        }
-      },
-
-      'var': {
-        type: 'dir',
-        children: {
-          'log': {
-            type: 'dir',
-            children: {
-              'syslog': {
-                type: 'file',
-                content: 'kernel: boot sequence complete...'
-              },
-              'auth.log': {
-                type: 'file',
-                content:
-`Failed password for invalid user test from 203.0.113.45
-Accepted publickey for admin from 10.1.2.3`
-              },
-              'nginx': {
-                type: 'dir',
-                children: {
-                  'access.log': {
-                    type: 'file',
-                    content: 'GET /index.html 200'
-                  },
-                  'error.log': {
-                    type: 'file',
-                    content: 'upstream timeout'
-                  }
-                }
-              },
-              'old': {
-                type: 'dir',
-                children: {
-                  'syslog.1': { type: 'file', content: 'old rotated logs...' },
-                  'syslog.2.gz': { type: 'file', content: 'compressed garbage' }
-                }
-              }
-            }
-          },
-
-          'www': {
-            type: 'dir',
-            children: {
-              'example': {
-                type: 'dir',
-                children: {
-                  'index.html': {
-                    type: 'file',
-                    content: '<h1>Welcome to Example.com</h1>'
-                  },
-                  'config.php': {
-                    type: 'file',
-                    content:
-`<?php
-$db_user = "example";
-$db_pass = "supersecretpassword";
-$db_host = "prod-db.internal";
-?>`
-                  },
-                  'uploads': {
-                    type: 'dir',
-                    children: {
-                      'avatar1.png': { type: 'file', content: '<binary>' },
-                      'tmp123.tmp': { type: 'file', content: 'junk temp file' }
-                    }
-                  }
-                }
-              }
-            }
-          },
-
-          'lib': {
-            type: 'dir',
-            children: {
-              'mysql': {
-                type: 'dir',
-                children: {
-                  'ibdata1': { type: 'file', content: 'binary mysql data' }
-                }
-              }
-            }
-          },
-
-          'tmp': {
-            type: 'dir',
-            children: {
-              '.X11-unix': { type: 'dir', children: {} },
-              'sess_abcd1234': { type: 'file', content: 'PHP session data' },
-              'debug.log': { type: 'file', content: 'temporary debug output' }
-            }
-          },
-
-          'backups': {
-            type: 'dir',
-            children: {
-              'daily': {
-                type: 'dir',
-                children: {
-                  '2024-11-01.tar.gz': { type: 'file', content: 'backup archive' },
-                  '2024-11-02.tar.gz': { type: 'file', content: 'backup archive' }
-                }
-              },
-              'old': {
-                type: 'dir',
-                children: {
-                  'legacy_server_2019.tar.gz': {
-                    type: 'file',
-                    content: 'ancient forgotten backup'
-                  }
-                }
-              }
-            }
+user:x:1000:1000:Regular User:/home/user:/bin/bash`
           }
         }
       },
 
       'home': {
         type: 'dir',
+        home: true,
         children: {
-          'admin': {
+          'user': {
             type: 'dir',
             children: {
-              '.bashrc': {
-                type: 'file',
-                content: 'alias ll="ls -lah"'
-              },
-              '.ssh': {
-                type: 'dir',
-                children: {
-                  'authorized_keys': {
-                    type: 'file',
-                    content: 'ssh-rsa AAAAB3Nza... admin@laptop'
-                  },
-                  'old_id_rsa': {
-                    type: 'file',
-                    content: '-----BEGIN PRIVATE KEY-----\n<oops>\n-----END PRIVATE KEY-----'
-                  }
-                }
-              },
-              'notes.txt': {
-                type: 'file',
-                content:
-`TODO:
-- rotate logs
-- remove old backups
-- migrate to new server`
-              },
-              'scripts': {
-                type: 'dir',
-                children: {
-                  'deploy.sh': {
-                    type: 'file',
-                    content: '#!/bin/bash\necho Deploying...'
-                  },
-                  'test_old.sh': {
-                    type: 'file',
-                    content: '# deprecated, do not use'
-                  }
-                }
-              }
-            }
-          },
-
-          'deploy': {
-            type: 'dir',
-            children: {
-              '.bash_history': {
-                type: 'file',
-                content: 'scp prod.tar.gz prod-web-03:/tmp'
-              }
-            }
-          }
-        }
-      },
-
-      'usr': {
-        type: 'dir',
-        children: {
-          'bin': { type: 'dir', children: {} },
-          'lib': { type: 'dir', children: {} },
-          'share': {
-            type: 'dir',
-            children: {
-              'doc': {
-                type: 'dir',
-                children: {
-                  'README': { type: 'file', content: 'System documentation' }
-                }
-              }
-            }
-          }
-        }
-      },
-
-      'opt': {
-        type: 'dir',
-        children: {
-          'monitoring': {
-            type: 'dir',
-            children: {
-              'agent': {
-                type: 'file',
-                content: 'custom monitoring binary'
-              },
-              'config.yml': {
-                type: 'file',
-                content:
-`alerts:
-  email: ops@example.com`
-              }
+              'notes.txt': { type: 'file',id: 'F111', content: 'My test notes' }
             }
           }
         }
@@ -478,7 +203,47 @@ $db_host = "prod-db.internal";
   }
 };
 
+function initializeEnv(fs, env) {
+  // 1. Determine username
+  env.user = fs.user || 'Anonymous';
 
+  // 2. Determine hostname
+  env.hostname = fs.hostname || (fs['/']?.children?.etc?.children?.hostname?.content) || 'localhost';
+
+  // 3. Find home directory
+  function findHome(dir) {
+    if (dir.home === true) return dir;
+    if (!dir.children) return null;
+    for (const key in dir.children) {
+      const res = findHome(dir.children[key]);
+      if (res) return res;
+    }
+    return null;
+  }
+
+  const homeDir = findHome(fs['/']) || fs['/'];
+
+  // 4. Get path string to home
+  function getPathToDir(target, dir = fs['/'], path = '') {
+    if (dir === target) return path || '/';
+    if (!dir.children) return null;
+    for (const key in dir.children) {
+      const childPath = path + '/' + key;
+      const res = getPathToDir(target, dir.children[key], childPath);
+      if (res) return res;
+    }
+    return null;
+  }
+
+  env.home = getPathToDir(homeDir);
+  env.cwd = env.home; // default cwd = home
+
+  return env;
+}
+
+// Usage
+initializeEnv(fs, env);
+console.log(env);
 
 //----start of simulated syscalls-----------------------------------------------------------------------------------------------------------------
 
@@ -551,6 +316,29 @@ function readFile(path, cwd = '/') {
 
 
 const commands = {
+    //dev commands---------
+
+    testdialogue: {
+      description: 'Open dialogue box with animated text',
+      execute: () => {
+          openDialogue();
+          showDialogueLines([
+              "Hello, operator.",
+              "I’ve been observing your activity.",
+              "You opened the wrong terminal.",
+              "Now your going to help me.",
+              
+          ]);
+          }
+    },
+    advancephase: {
+      description: 'Advance the gamePhase(complete all objectives, currently just advances dialogue phase)',
+      execute: () => {
+        currentmissionphase++; 
+        DisplayCurrentDialogue();
+      }
+    },
+    //end of dev commands-------
     mv: {
         description: 'Move or rename a file/directory',
         execute: (args) => {
@@ -786,19 +574,6 @@ const commands = {
     execute: () => {
         const now = new Date();
         printToTerminal(now.toString());
-        }
-    },
-    testdialogue: {
-    description: 'Open dialogue box with animated text',
-    execute: () => {
-        openDialogue();
-        showDialogueLines([
-            "Hello, operator.",
-            "I’ve been observing your activity.",
-            "You opened the wrong terminal.",
-            "Now your going to help me.",
-            
-        ]);
         }
     },
    cp: {
@@ -1268,6 +1043,7 @@ function closeDialogue(){
     dialogueTerminal.innerHTML = "";
     canContinue = false;
     isEndOfDialogue = false;
+    dialogueRunning = false;
 }
 
 closeBtn.addEventListener("click", () => {
@@ -1324,7 +1100,12 @@ function animateLine(line, speed = 35, sessionId) {
     });
 }
 
+let dialogueRunning = false; // global or module-level flag
+
 async function showDialogueLines(lines, delay = 350) {
+      if (dialogueRunning) return; // prevent overlapping dialogues
+    dialogueRunning = true;
+
     openDialogue();
     const sessionId = dialogueSession;
 
@@ -1406,10 +1187,60 @@ const missiondialogue = {
               "You opened the wrong terminal.",
               "Now you're going to help me.",
               "*END*"], 
-      phase2: "",
+      phase2: ["Placeholder phase2 mission 1"]
+        ,
     }
   }
 
+  //function takes ShowDialogueLines and gives it the current dialogue meant to be shown. 
+ 
+
+  //stuff for mission
+
+      let missionnumber = 1;
+
   if (inmission){
-    showDialogueLines(missiondialogue.mission1.phase1);
+
+
+
+      const params = new URLSearchParams(window.location.search);
+  const requestedMission = parseInt(params.get("mission"), 10);
+  console.log(requestedMission);
+  const highestCompleted = GameSave.state.highestMission;
+
+  if (
+    Number.isNaN(requestedMission) ||
+    requestedMission > highestCompleted + 1
+  ) {
+    window.location.href = "nicetry.html";
+  } else {
+    missionnumber = requestedMission; 
+    console.log(requestedMission);
   }
+
+    //showDialogueLines(missiondialogue.mission1.phase1);
+  }
+
+  function DisplayCurrentDialogue() { 
+    // Build dynamic keys
+    const missionKey = `mission${missionnumber}`;
+    const phaseKey = `phase${currentmissionphase}`;
+
+    // Get the dialogue for the current mission and phase
+    const dialogueLines = missiondialogue[missionKey][phaseKey];
+
+    // Safety check in case the mission or phase doesn't exist
+    if (dialogueLines && dialogueLines.length > 0) {
+        showDialogueLines(dialogueLines);
+    } else {
+        console.warn(`No dialogue found for ${missionKey} phase ${currentmissionphase}`);
+    }
+}
+
+if (inmission){
+DisplayCurrentDialogue();
+}
+
+document.getElementById("replayinfo").addEventListener("click", function() {
+    DisplayCurrentDialogue();
+});
