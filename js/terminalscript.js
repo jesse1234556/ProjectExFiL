@@ -162,7 +162,7 @@ terminalInput.addEventListener('paste', (e) => {
 // Focus input when anywhere is clicked or a keypress is detected,
 // but ignore if Ctrl or Alt is held
 
-const fs = {
+let fs = {
   user: 'Guest',
   hostname: 'ProjectExFiL',
   '/': {
@@ -194,7 +194,7 @@ user:x:1000:1000:Regular User:/home/user:/bin/bash`
           'user': {
             type: 'dir',
             children: {
-              'notes.txt': { type: 'file',id: 'F111', content: 'My test notes' }
+              'notes.txt': { type: 'file', id: 'f111', content: 'My test notes' }
             }
           }
         }
@@ -339,6 +339,57 @@ const commands = {
       }
     },
     //end of dev commands-------
+        upload: {
+      description: 'Upload a file to complete objectives',
+      execute: (args) => {
+        if (args.length < 1) {
+          printToTerminal('upload: missing file operand');
+          return;
+        }
+
+        // Resolve the path and get the file node
+        const filePath = resolve(args[0], env.cwd);
+        const fileNode = getNode(filePath);
+
+        if (!fileNode) {
+          printToTerminal(`upload: cannot find '${args[0]}'`);
+          return;
+        }
+
+        if (fileNode.type !== 'file') {
+          printToTerminal(`upload: '${args[0]}' is not a file`);
+          return;
+        }
+
+        if (!fileNode.id) {
+          printToTerminal("Upload failed");
+          return;
+        }
+
+        // Find matching objective by code
+        const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === fileNode.id);
+
+        if (objectiveIndex === -1) {
+          printToTerminal("Upload failed");
+          return;
+        }
+
+        const objective = objectiveTracker[objectiveIndex];
+
+        if (objective.status === 'completed') {
+          printToTerminal(`upload: '${args[0]}' already uploaded`);
+          return;
+        }
+
+        // Mark objective as completed
+        objective.status = 'completed';
+        updateObjectives();
+
+        // Inform the user
+        printToTerminal(`Upload of '${args[0]}' successful `);
+      }
+    },
+
     mv: {
         description: 'Move or rename a file/directory',
         execute: (args) => {
@@ -1177,27 +1228,13 @@ function waitForContinue(sessionId) {
     });
 }
 
-const missiondialogue = {
-  
-    mission1: {
-      name: "Orientation Protocol", 
-      phase1: ["Hello, operator.",
-              "I’ve been observing your activity.",
-              "*PAUSE*",
-              "You opened the wrong terminal.",
-              "Now you're going to help me.",
-              "*END*"], 
-      phase2: ["Placeholder phase2 mission 1"]
-        ,
-    }
-  }
 
   //function takes ShowDialogueLines and gives it the current dialogue meant to be shown. 
  
 
   //stuff for mission
 
-      let missionnumber = 1;
+ let missionnumber = 1;
 
   if (inmission){
 
@@ -1221,13 +1258,99 @@ const missiondialogue = {
     //showDialogueLines(missiondialogue.mission1.phase1);
   }
 
+
+
+
+document.getElementById("replayinfo").addEventListener("click", function() {
+    DisplayCurrentDialogue();
+});
+
+
+
+
+const missionData = {
+  //legend for ID.
+  //(f/d) is file or directory
+  //so first objective is to upload file in phase 1, would be 1 (for upload).f.1 (for first ID).1 (for phase 1)
+  //mission ID is typeOfObjetive.(f/d).IDWithInPhase.phase
+  //type of objective legend: 1 = upload, 2 = access directory, 3 = delete file or directory. 
+   mission1: {
+    objectives: [
+      {
+        code: "1.f.1.1",
+        text:"Upload notes.txt", 
+        status:"pending",
+      },
+      {
+        code: "1.f.2.1",
+        text:"Upload passwords.txt",
+        status:"pending",
+      },
+    ]
+  ,
+    //datafs is the file system but in data instead of the real current one. 
+    datafs: {
+  user: 'Guest',
+  hostname: 'ProjectExFiL',
+  '/': {
+    type: 'dir',
+    children: {
+      'passwords.txt': 
+      {
+        type: 'file', 
+        content:"brrx153",
+        id:"1.f.2.1"},
+      'bin': {
+        type: 'dir',
+        children: {
+          'ls': { type: 'file', content: 'ELF binary' }
+        }
+      },
+
+      'etc': {
+        type: 'dir',
+        children: {
+          'passwd': {
+            type: 'file',
+            content:
+`root:x:0:0:root:/root:/bin/bash
+user:x:1000:1000:Regular User:/home/user:/bin/bash`
+          }
+        }
+      },
+
+      'home': {
+        type: 'dir',
+        home: true,
+        children: {
+          'user': {
+            type: 'dir',
+            children: {
+              'notes.txt': { type: 'file', id: '1.f.1.1', content: 'My test notes' }
+            }
+          }
+        }
+      }
+    }
+  }},
+      name: "Orientation Protocol", 
+      phaseDialogue1: ["Hello, operator.",
+              "I’ve been observing your activity.",
+              "*PAUSE*",
+              "You opened the wrong terminal.",
+              "Now you're going to help me.",
+              "*END*"], 
+      phaseDialogue2: ["Placeholder phase2 mission 1"],
+    }
+}
+
+  const missionKey = `mission${missionnumber}`;
+    const phaseKey = `phaseDialogue${currentmissionphase}`;
+
   function DisplayCurrentDialogue() { 
-    // Build dynamic keys
-    const missionKey = `mission${missionnumber}`;
-    const phaseKey = `phase${currentmissionphase}`;
 
     // Get the dialogue for the current mission and phase
-    const dialogueLines = missiondialogue[missionKey][phaseKey];
+    const dialogueLines = missionData[missionKey][phaseKey];
 
     // Safety check in case the mission or phase doesn't exist
     if (dialogueLines && dialogueLines.length > 0) {
@@ -1236,11 +1359,50 @@ const missiondialogue = {
         console.warn(`No dialogue found for ${missionKey} phase ${currentmissionphase}`);
     }
 }
+  let objectiveTracker = []
 
-if (inmission){
-DisplayCurrentDialogue();
+//initalize the current mission using missionData aswell as missionumber
+function initializeMission(){
+
+  fs = missionData[missionKey].datafs;
+
+  const objectives = missionData[missionKey].objectives;
+  objectiveTracker = objectives;
+  
 }
 
-document.getElementById("replayinfo").addEventListener("click", function() {
-    DisplayCurrentDialogue();
-});
+objectivecontent = document.getElementById("objectivecontent"); 
+
+
+function updateObjectives() {
+  // Clear current content
+  objectivecontent.innerHTML = "";
+
+  // Loop through each objective
+  objectiveTracker.forEach((obj, index) => {
+    // Create a new span
+    const span = document.createElement("span");
+    span.id = index + 1; // Optional: assign a unique id
+
+    // Set the text and checkbox depending on status
+    if (obj.status === "completed") {
+      span.style.textDecoration = "line-through";
+      span.textContent = "☑ " + obj.text;
+    } else {
+      span.textContent = "☐ " + obj.text;
+    }
+
+    // Append span to container
+    objectivecontent.appendChild(span);
+
+    // Add a <br> after each span
+    objectivecontent.appendChild(document.createElement("br"));
+  });
+}
+
+if (inmission){
+  initializeMission()
+  DisplayCurrentDialogue();
+   updateObjectives();
+ 
+}

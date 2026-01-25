@@ -1,12 +1,13 @@
 
 Working on objectives:
 Give files ID's to prevent touch creating files with same name of course; 
+
 ID system: 
+Files will start with f, follwed by the ID in the phase its from, usually order in the objectives. And the phase its on.
+Directories are the same but with d instead of f
 
-Files will start with F, follwed by the mission its from and the phase its on, with the next number being the order on the objective list the phase its on is from. 
-Directories are the same but with D instead of F
-
-For instance, a file for a mission thats in the first phase of the first mission in the first objective list would be "F111"
+For instance, a file for a mission thats in the first phase of the in the first objective list would be "f11"
+(f and d always lowercase in ID's)
 
 Testing first objective: 
 (upload the 'shadow' file. )
@@ -21,64 +22,7 @@ missiondata object needs to be created.
 
 Needs to include. each phases dialogue and mission objectives. As well as fs object included with metadata; username, hostname, home.
 the mission objectives could just be whatever of the 5(start with just the first 3 which are access dir, delete file and upload file.) your trying to do and then the ID of the fs object you want. 
-So if you want them to upload something in phase 1, if its the first one in phase 1, you do '1.f111' 1 to notate upload. 
+The id inside of objectives is slightly different, 'X.Y.ID' X is the phase its for, 
+So if you want them to upload something in phase 1, if its the first one in phase 1, you do '1.1.f11' 1 to notate upload. 
 Also need the text/title for the objective to display. 
 
-
-CHATGPT---------------
-I need help creating these 3 things:
-
-upload command: Takes 1 file, acts like cp. Used for specific file objective
-access directory: ticks when you access a specfic directory (path included so you cant just mkdir > cd into the name of it)
-file not exist/delete file: ticks when file doesnt exist (player deleted it)
-
-I have this simulated FS in JS. Excerpt from File system:
-
-const fs = {
-  '/': {
-    type: 'dir',
-    children: {
-      'bin': {
-        type: 'dir',
-        children: {
-          'ls': { type: 'file', content: 'ELF binary' },
-          'cat': { type: 'file', content: 'ELF binary' },
-          'bash': { type: 'file', content: 'GNU bash shell binary' },
-          'grep': { type: 'file', content: 'GNU grep binary' },
-          'tar': { type: 'file', content: 'GNU tar binary' }
-        }
-      },
-
-      'sbin': {
-        type: 'dir',
-        children: {
-          'init': { type: 'file', content: 'system init binary' },
-          'reboot': { type: 'file', content: 'reboot system' },
-          'shutdown': { type: 'file', content: 'shutdown system' },
-          'iptables': { type: 'file', content: 'netfilter rules manager' }
-        }
-      },
-
-
-Lets try to create the 'upload' command first. I already have the cp command. Aswell as simulated syscalls. But i think I need to create another attribute to the FS, ID for files or directorys. 
-
-ID system: 
-
-Files will start with F, follwed by the mission its from and the phase its on, with the next number being the order on the objective list the phase its on is from. 
-Directories are the same but with D instead of F
-
-For instance, a file for a mission thats in the first phase of the first mission in the first objective list would be "F111"
-
-Testing first objective: 
-(upload the 'shadow' file. )
-
-I have this 'shadow'  file. 
- 'shadow': {
-            id: 'F111',
-            type: 'file',
-            content:
-`root:$6$saltsalt$hashhashhash:19400:0:99999:7:::
-admin:$6$adminsalt$hashhashhash:19400:0:99999:7:::`
-          },
-
-Now I need help making an upload command

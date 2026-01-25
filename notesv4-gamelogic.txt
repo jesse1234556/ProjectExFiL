@@ -1,8 +1,9 @@
 basic objectives, same every level used multiple times:
-
+-- core 3, do first. 
 upload command: Takes 1 file, acts like cp. Used for specific file objective
-access directory: ticks when you access a specfic directory (path included so you cant just mkdir > cd into the name of it)
+access directory: ticks when you access a specfic directory (ID included so you cant just mkdir > cd into the name of it)
 file not exist/delete file: ticks when file doesnt exist (player deleted it)
+--
 login as someone: access user/elevate permissions
 kill/stop: stop a process 
 
@@ -30,3 +31,9 @@ dialogue in general: not completly sure how to implement this. has function that
 
 hard to implement: 
 Objectives, needs to range from repeatable ones like upload file or access directory to more custom stuff like create 10 copies of a specific file. 
+
+
+FILE SYSTEM HAS A FEW METADATA THINGS:
+
+Home directory should be defined
+Hostname and username should also be defined. 
