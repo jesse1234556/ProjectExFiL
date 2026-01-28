@@ -395,7 +395,8 @@ const commands = {
         execute: (args) => {
             if (args.length < 2) {
                 printToTerminal('mv: missing file operand');
-                return;
+                return;Game
+
             }
 
             const srcPath = resolve(args[0], env.cwd);
@@ -523,19 +524,47 @@ const commands = {
           }
       },
 
-    cd: {
+            cd: {
         description: 'Change the current directory',
         execute: (args) => {
-            if (args.length === 0) args[0] = '/'; // default to root if no path
-            const result = cd(args[0], env.cwd);   // use env.cwd
-            if (result.error) printToTerminal(result.error);
-            else {
-                env.cwd = result.cwd;             // update env.cwd
-                printToTerminal(`Directory changed to ${env.cwd}`);
-                //terminalPrompt.textContent = `${env.user}@${env.hostname}:${env.cwd}> `;
+            if (args.length === 0) args[0] = '/';
+
+            const result = cd(args[0], env.cwd);
+
+            if (result.error) {
+            printToTerminal(result.error);
+            return;
             }
-        }
-    },
+
+            // Update cwd
+            env.cwd = result.cwd;
+            printToTerminal(`Directory changed to ${env.cwd}`);
+
+            // ---- OBJECTIVE CHECK START ----
+
+            const dirNode = getNode(env.cwd);
+
+            if (!dirNode || !dirNode.code) return;
+
+            const objectiveIndex = objectiveTracker.findIndex(
+            obj => obj.code === dirNode.code
+            );
+
+            if (objectiveIndex === -1) return;
+
+            const objective = objectiveTracker[objectiveIndex];
+
+            if (objective.status === 'completed') return;
+
+            objective.status = 'completed';
+            updateObjectives();
+
+            printToTerminal(`Objective completed by entering '${env.cwd}'`);
+
+            // ---- OBJECTIVE CHECK END ----
+             }
+        },
+
     ls: {
         description: 'List directory contents',
         execute: (args) => {
@@ -870,6 +899,7 @@ rm: {
 
 
 const usage = {
+  upload: "upload <file>",
   mainmenu: "mainmenu [-f]",
   grep: 'grep [-r] <pattern> <file|dir> ...',
   rm: 'rm [-r] <file>',
@@ -1272,7 +1302,7 @@ const missionData = {
   //legend for ID.
   //(f/d) is file or directory
   //so first objective is to upload file in phase 1, would be 1 (for upload).f.1 (for first ID).1 (for phase 1)
-  //mission ID is typeOfObjetive.(f/d).IDWithInPhase.phase
+  //mission ID is typeOfObjetive.(f/d).IDWithinPhase.phaseCurrenetlyIn
   //type of objective legend: 1 = upload, 2 = access directory, 3 = delete file or directory. 
    mission1: {
     objectives: [
@@ -1286,6 +1316,11 @@ const missionData = {
         text:"Upload passwords.txt",
         status:"pending",
       },
+      {
+        code: "2.d.3.1",
+        text: "Access 'etc' directory",
+        status:"pending",
+      }
     ]
   ,
     //datafs is the file system but in data instead of the real current one. 
@@ -1309,6 +1344,7 @@ const missionData = {
 
       'etc': {
         type: 'dir',
+        code:'2.d.3.1',
         children: {
           'passwd': {
             type: 'file',
