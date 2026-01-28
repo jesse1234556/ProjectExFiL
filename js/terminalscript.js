@@ -336,6 +336,8 @@ const commands = {
       execute: () => {
         currentmissionphase++; 
         DisplayCurrentDialogue();
+        completePhaseObjectives(objectiveTracker);
+        updateObjectives();
       }
     },
     //end of dev commands-------
@@ -361,32 +363,9 @@ const commands = {
           return;
         }
 
-        if (!fileNode.id) {
-          printToTerminal("Upload failed");
-          return;
-        }
 
-        // Find matching objective by code
-        const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === fileNode.id);
-
-        if (objectiveIndex === -1) {
-          printToTerminal("Upload failed");
-          return;
-        }
-
-        const objective = objectiveTracker[objectiveIndex];
-
-        if (objective.status === 'completed') {
-          printToTerminal(`upload: '${args[0]}' already uploaded`);
-          return;
-        }
-
-        // Mark objective as completed
-        objective.status = 'completed';
-        updateObjectives();
-
-        // Inform the user
-        printToTerminal(`Upload of '${args[0]}' successful `);
+        completeObjective(fileNode, 1, args[0])
+        
       }
     },
 
@@ -540,28 +519,9 @@ const commands = {
             env.cwd = result.cwd;
             printToTerminal(`Directory changed to ${env.cwd}`);
 
-            // ---- OBJECTIVE CHECK START ----
-
+            // ---- OBJECTIVE CHECK
             const dirNode = getNode(env.cwd);
-
-            if (!dirNode || !dirNode.code) return;
-
-            const objectiveIndex = objectiveTracker.findIndex(
-            obj => obj.code === dirNode.code
-            );
-
-            if (objectiveIndex === -1) return;
-
-            const objective = objectiveTracker[objectiveIndex];
-
-            if (objective.status === 'completed') return;
-
-            objective.status = 'completed';
-            updateObjectives();
-
-            printToTerminal(`Objective completed by entering '${env.cwd}'`);
-
-            // ---- OBJECTIVE CHECK END ----
+            completeObjective(dirNode, 2, args[0])
              }
         },
 
@@ -1297,7 +1257,6 @@ document.getElementById("replayinfo").addEventListener("click", function() {
 
 
 
-
 const missionData = {
   //legend for ID.
   //(f/d) is file or directory
@@ -1312,12 +1271,12 @@ const missionData = {
         status:"pending",
       },
       {
-        code: "1.f.2.1",
+        code: "1.f.3.1",
         text:"Upload passwords.txt",
         status:"pending",
       },
       {
-        code: "2.d.3.1",
+        code: "2.d.2.1",
         text: "Access 'etc' directory",
         status:"pending",
       }
@@ -1334,7 +1293,7 @@ const missionData = {
       {
         type: 'file', 
         content:"brrx153",
-        id:"1.f.2.1"},
+        code:"1.f.3.1"},
       'bin': {
         type: 'dir',
         children: {
@@ -1344,7 +1303,7 @@ const missionData = {
 
       'etc': {
         type: 'dir',
-        code:'2.d.3.1',
+        code:'2.d.2.1',
         children: {
           'passwd': {
             type: 'file',
@@ -1362,7 +1321,7 @@ user:x:1000:1000:Regular User:/home/user:/bin/bash`
           'user': {
             type: 'dir',
             children: {
-              'notes.txt': { type: 'file', id: '1.f.1.1', content: 'My test notes' }
+              'notes.txt': { type: 'file', code: '1.f.1.1', content: 'My test notes' }
             }
           }
         }
@@ -1380,14 +1339,15 @@ user:x:1000:1000:Regular User:/home/user:/bin/bash`
     }
 }
 
-  const missionKey = `mission${missionnumber}`;
-    const phaseKey = `phaseDialogue${currentmissionphase}`;
+    let missionKey = `mission${missionnumber}`;
+    let phaseKey = `phaseDialogue${currentmissionphase}`;
 
   function DisplayCurrentDialogue() { 
-
+    phaseKey =`phaseDialogue${currentmissionphase}`;
+    console.log(currentmissionphase);
     // Get the dialogue for the current mission and phase
     const dialogueLines = missionData[missionKey][phaseKey];
-
+    console.log(missionData[missionKey][phaseKey])
     // Safety check in case the mission or phase doesn't exist
     if (dialogueLines && dialogueLines.length > 0) {
         showDialogueLines(dialogueLines);
@@ -1395,7 +1355,7 @@ user:x:1000:1000:Regular User:/home/user:/bin/bash`
         console.warn(`No dialogue found for ${missionKey} phase ${currentmissionphase}`);
     }
 }
-  let objectiveTracker = []
+  let objectiveTracker = [] //objective tracker is copy of 'objectives' from the current selected mission
 
 //initalize the current mission using missionData aswell as missionumber
 function initializeMission(){
@@ -1407,20 +1367,111 @@ function initializeMission(){
   
 }
 
-objectivecontent = document.getElementById("objectivecontent"); 
+const objectivecontent = document.getElementById("objectivecontent"); 
 
+function completeObjective(node, i, name) {
+    // name is the name of the node
+    // node is the file system node getting sent to test for completion
+    // i is the type of objective trying to get completed 
+    // code for 'i': 1 = upload, 2 = access dir, 3 = file deleted/not exist 
+
+    switch (i) {
+        case 1: {
+            if (!node.code) {
+                console.log("Upload failed: Node does not have a code");
+                printToTerminal("Upload failed");
+                return;
+            }
+
+            // Find matching objective by code
+            const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.code);
+
+            if (objectiveIndex === -1) {
+                console.log(`Upload failed: No objective found with code '${node.code}'`);
+                printToTerminal("Upload failed,");
+                return;
+            }
+
+            const objective = objectiveTracker[objectiveIndex];
+
+            if (objective.status === 'completed') {
+                console.log(`Upload failed: Objective '${name}' is already completed`);
+                printToTerminal(`upload: '${name}' already uploaded`);
+                return;
+            }
+
+            // Mark objective as completed
+            objective.status = 'completed';
+            updateObjectives();
+
+            // Inform the user
+            printToTerminal(`Upload of '${name}' successful`);
+            break;
+        }
+        case 2: {
+            console.log("HELLOOO");
+
+            const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.code);
+
+            if (objectiveIndex === -1) {
+                console.log(`Access directory failed: No objective found with code '${node.code}'`);
+                return;
+            }
+
+            const objective = objectiveTracker[objectiveIndex];
+
+            if (objective.status === 'completed') {
+                console.log(`Access directory failed: Objective '${name}' is already completed`);
+                return;
+            }
+
+            // Mark objective as completed
+            objective.status = 'completed';
+            updateObjectives();
+            printToTerminal(`Objective completed by entering '${name}'`);
+        }
+    }
+}
+
+function completePhaseObjectives(obj){
+    //obj is objectiveTracker
+      if (obj && typeof obj === 'object') {
+    for (const key in obj) {
+      if (!obj.hasOwnProperty(key)) continue;
+
+      if (key === 'status') {
+        obj[key] = 'completed';
+      } else if (typeof obj[key] === 'object') {
+        completePhaseObjectives(obj[key]); // recursive call for nested objects or arrays
+      }
+    }
+  }
+}
 
 function updateObjectives() {
   // Clear current content
   objectivecontent.innerHTML = "";
 
-  // Loop through each objective
-  objectiveTracker.forEach((obj, index) => {
-    // Create a new span
-    const span = document.createElement("span");
-    span.id = index + 1; // Optional: assign a unique id
+  // Sort objectives by the 3rd unit in the code
+  const sortedObjectives = [...objectiveTracker].sort((a, b) => {
+    // Split the code by periods
+    const aParts = a.code.split(".");
+    const bParts = b.code.split(".");
 
-    // Set the text and checkbox depending on status
+    // Get the 3rd unit (index 2). Failsafe: default to Infinity if missing
+    const aThird = parseInt(aParts[2]) || Infinity;
+    const bThird = parseInt(bParts[2]) || Infinity;
+
+    // Compare numbers
+    return aThird - bThird;
+  });
+
+  // Loop through each sorted objective
+  sortedObjectives.forEach((obj, index) => {
+    const span = document.createElement("span");
+    span.id = index + 1; // Optional: unique id
+
+    // Add checkbox + strike-through if completed
     if (obj.status === "completed") {
       span.style.textDecoration = "line-through";
       span.textContent = "☑ " + obj.text;
@@ -1428,17 +1479,16 @@ function updateObjectives() {
       span.textContent = "☐ " + obj.text;
     }
 
-    // Append span to container
+    // Append span and a line break
     objectivecontent.appendChild(span);
-
-    // Add a <br> after each span
     objectivecontent.appendChild(document.createElement("br"));
   });
 }
 
+
 if (inmission){
   initializeMission()
   DisplayCurrentDialogue();
-   updateObjectives();
+  updateObjectives();
  
 }
