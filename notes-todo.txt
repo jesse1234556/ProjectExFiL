@@ -1,2 +1,3 @@
 Add phases.
 
+Dialogue at end of phase, different from replayable informational dialogue. 
