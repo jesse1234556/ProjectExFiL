@@ -107,6 +107,9 @@ startCursorBlink();
 // Assuming terminalInput is your input container element
 body.addEventListener('keydown', (event) => {
    //event.preventDefault(); // prevent default browser behavior (like scrolling) disabled for now 
+   if (dialogueRunning){
+    return;
+   }
    switch(event.key) {
     case 'ArrowLeft':
         if (cursorIndex > 0) cursorIndex--;
@@ -157,7 +160,6 @@ terminalInput.addEventListener('paste', (e) => {
   document.execCommand('insertText', false, text); // Insert plain text
 });
 */
-
 
 // Focus input when anywhere is clicked or a keypress is detected,
 // but ignore if Ctrl or Alt is held
@@ -549,6 +551,11 @@ const commands = {
         printToTerminal(result.content);
       }
        }
+
+      const filePath = resolve(args[0], env.cwd);
+       const fileNode = getNode(filePath);
+       completeObjective(fileNode, 4, args[0]);
+
      }
    },
    history: {
@@ -1057,6 +1064,7 @@ const DIALOGUE_COMMANDS = {
 };
 
 
+const darkoverlay = document.getElementById("darkoverlay");
 const dialogueOverlay = document.getElementById("dialogueOverlay");
 const dialogueBox = document.getElementById("dialogueBox");
 const closeBtn = document.getElementById("closeDialogue");
@@ -1082,6 +1090,7 @@ function closeDialogue(){
     dialogueOverlay.style.display = "none";
     dialogueBox.style.display = "none";
     dialogueTerminal.innerHTML = "";
+    darkoverlay.style.display = "none";
     canContinue = false;
     isEndOfDialogue = false;
     dialogueRunning = false;
@@ -1094,6 +1103,7 @@ closeBtn.addEventListener("click", () => {
 function openDialogue() {
     dialogueSession++;
     dialogueOverlay.style.display = "block";
+    darkoverlay.style.display = "block"
     dialogueBox.style.display = "block";
     canContinue = false;
 }
@@ -1228,28 +1238,23 @@ function waitForContinue(sessionId) {
 
   if (inmission){
 
-
-
-      const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(window.location.search);
   const requestedMission = parseInt(params.get("mission"), 10);
   console.log(requestedMission);
   const highestCompleted = GameSave.state.highestMission;
+if (
+  Number.isNaN(requestedMission) ||   // not a number
+  requestedMission <= 0 ||             // negative or zero
+  requestedMission >= 7                // 7 or higher
+) {
+  window.location.href = "missionselect.html";
+} else {
+  missionnumber = requestedMission;
+  console.log(requestedMission);
+}
 
-  if (
-    Number.isNaN(requestedMission) ||
-    requestedMission > highestCompleted + 1
-  ) {
-    window.location.href = "nicetry.html";
-  } else {
-    missionnumber = requestedMission; 
-    console.log(requestedMission);
+
   }
-
-    //showDialogueLines(missiondialogue.mission1.phase1);
-  }
-
-
-
 
 document.getElementById("replayinfo").addEventListener("click", function() {
     DisplayCurrentDialogue();
@@ -1262,7 +1267,7 @@ const missionData = {
   //(f/d) is file or directory
   //so first objective is to upload file in phase 1, would be 1 (for upload).f.1 (for first ID).1 (for phase 1)
   //mission ID is typeOfObjetive.(f/d).IDWithinPhase.phaseCurrenetlyIn
-  //type of objective legend: 1 = upload, 2 = access directory, 3 = delete file or directory. 
+  //type of objective legend: 1 = upload, 2 = access directory, 3 = delete file or directory, 4 = read file (cat).
    mission1: {
     objectives: [
       {
@@ -1279,7 +1284,12 @@ const missionData = {
         code: "2.d.2.1",
         text: "Access 'etc' directory",
         status:"pending",
-      }
+      },
+      {     
+        code: "4.f.4.1",
+        text: "Read 'passwd' file",
+        status:"pending",
+      },
     ]
   ,
     //datafs is the file system but in data instead of the real current one. 
@@ -1306,6 +1316,7 @@ const missionData = {
         code:'2.d.2.1',
         children: {
           'passwd': {
+            code: "4.f.4.1",
             type: 'file',
             content:
 `root:x:0:0:root:/root:/bin/bash
@@ -1421,7 +1432,6 @@ function completeObjective(node, i, name) {
             const objective = objectiveTracker[objectiveIndex];
 
             if (objective.status === 'completed') {
-                console.log(`Access directory failed: Objective '${name}' is already completed`);
                 return;
             }
 
@@ -1430,6 +1440,24 @@ function completeObjective(node, i, name) {
             updateObjectives();
             printToTerminal(`Objective completed by entering '${name}'`);
         }
+    case 4: {
+         const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.code);
+
+          if (objectiveIndex === -1) {
+                console.log(`Access directory failed: No objective found with code '${node.code}'`);
+                return;
+            }
+
+             const objective = objectiveTracker[objectiveIndex]
+
+          if (objective.status === 'completed') {
+                 return;
+            }
+
+             objective.status = 'completed';
+            updateObjectives();
+            printToTerminal(`Objective completed by reading '${name}'`);
+    }
     }
 }
 
