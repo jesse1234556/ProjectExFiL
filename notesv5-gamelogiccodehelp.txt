@@ -17,6 +17,7 @@ mission objectives are split into codes:
 1 = upload file. Objective tracker gets updated when upload command is ran. 
 2 = access directory. Object tracker checks if cwd is on the ID of the dir you want.
 3 = file deleted. Objective tracker checks if file exists after every command. 
+4 = read file. Use 'cat'
 
 missiondata object needs to be created.
 

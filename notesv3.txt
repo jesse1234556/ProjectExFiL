@@ -1,10 +1,9 @@
 Mission 1: Orientation Protocol: Literal tutorial
 Mission 2: Honeypot Simulator: Fake files, slightly more 'real' feel 
-Mission 3: Apartment Complex: Names, cameras, etc,
+Mission 3: Hotel Complex: Names, cameras, etc,
 Mission 4: International Airport: flight times, payment info, credit cards. delay specific flight
 Mission 5: Nuclear Research Lab: confidentail nuclear files, disrupt activity
 Mission 6: Blacksite: encrpted records or something idek, 
-
 
 Command limits per attempt?
 
@@ -30,4 +29,3 @@ hackerman already has admin login
 admin actions are logged much more securly and thourhougly
 you need to deeseclate login and then do actions
 --
-

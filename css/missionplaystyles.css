@@ -39,7 +39,7 @@ body{
     height: 100vh;
     width: 250px;
     user-select: none;
-    z-index: 1000;
+    z-index: 777;
 }
 
 
@@ -95,6 +95,17 @@ body{
     color: #00f0ff;
     font-size: 1.7em;
     cursor: pointer;
+}
+
+.darkoverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); /* darkness level */
+  display: none;
+  z-index: 888;
 }
 
 .dialogueTerminal {
