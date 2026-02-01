@@ -8,6 +8,7 @@ const missionData = {
     mission1,
 }
 
+let commandsrestricted = true; 
 let inmission = false; 
 let currentmissionphase; 
 
@@ -26,7 +27,6 @@ if (window.location.pathname.endsWith("missionplay.html")) {
 
 if (inmission == true){
   currentmissionphase = 1; 
-  const commandcolumn = document.getElementById("commandcolumn");
 }
 
 const env = {
@@ -39,7 +39,17 @@ const env = {
 
 const MAX_HISTORY = 50;
 
-let cmdhistory = [];
+let cmdhistory = [];const availableCommands = missionData.mission1.availableCommands;
+
+// commands to always add
+const extraCommands = ["testdialogue", "advancephase", "pwd", "whoami", "clear", "history", "date", "mainmenu"];
+
+// iterate over each property and push the extra commands
+for (const key in availableCommands) {
+  if (Array.isArray(availableCommands[key])) {
+    availableCommands[key].push(...extraCommands);
+  }
+}
 
 function printToTerminal(text) {
     const line = document.createElement('div');
@@ -342,10 +352,8 @@ const commands = {
     advancephase: {
       description: 'Advance the gamePhase(complete all objectives, currently just advances dialogue phase)',
       execute: () => {
-        currentmissionphase++; 
-        DisplayCurrentDialogue();
         completePhaseObjectives(objectiveTracker);
-        updateObjectives();
+        advancePhase(); 
       }
     },
     //end of dev commands-------
@@ -382,7 +390,7 @@ const commands = {
         execute: (args) => {
             if (args.length < 2) {
                 printToTerminal('mv: missing file operand');
-                return;Game
+                return;
 
             }
 
@@ -902,7 +910,7 @@ const listOfKeys = Object.keys(commands).join(", ")
 //help command outside of commands object because cant print listofKeys since it doesnt exist before getting defined
 commands.help = {
     description: 'Show available commands', 
-    execute: () => printToTerminal('Avaliable commands: help, ' + listOfKeys)
+    execute: () => printToTerminal('Available commands: help, ' + availableCommands[currentmissionphase].join(', '))
 }
 let historyIndex = null; // tracks current position in history
 
@@ -1022,9 +1030,7 @@ if (e.key === 'Enter') {
     e.preventDefault(); 
 
     const input = inputText.join('').trim().replace(/\s+/g, ' '); // join array into string and trim
-    console.log(input);
     input.trim();
-    console.log(input);
     if (input === '') return; // ignore empty commands
 
     printToTerminal(`${env.user}@${env.hostname}:${env.cwd}> ${input}`);
@@ -1032,7 +1038,17 @@ if (e.key === 'Enter') {
     const [cmd, ...args] = input.split(' ');
 
     if (commands[cmd]) {
+        let commandAvailable = false;
+        for (let i = 0; i < availableCommands[currentmissionphase].length; i++){
+            if (cmd == availableCommands[currentmissionphase][i]) {
+                commandAvailable = true
+            }
+        }
+        if (commandAvailable || !commandsrestricted){
         commands[cmd].execute(args);
+        } else {
+            printToTerminal("Command not available: " + input)
+        }
     } else {
         printToTerminal('Unknown command: ' + input);
     }
@@ -1108,6 +1124,13 @@ function closeDialogue(){
 
 closeBtn.addEventListener("click", () => {
     closeDialogue();
+});
+
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && dialogueRunning) {
+        closeDialogue();
+    }
 });
 
 function openDialogue() {
@@ -1273,12 +1296,12 @@ document.getElementById("replayinfo").addEventListener("click", function() {
 
 
 
-    let missionKey = `mission${missionnumber}`;
-    let phaseKey = `phaseDialogue${currentmissionphase}`;
+let missionKey = `mission${missionnumber}`;
+let phaseKey = `phaseDialogue${currentmissionphase}`;
 
   function DisplayCurrentDialogue() { 
     phaseKey =`phaseDialogue${currentmissionphase}`;
-    console.log(currentmissionphase);
+
     // Get the dialogue for the current mission and phase
     const dialogueLines = missionData[missionKey][phaseKey];
     console.log(missionData[missionKey][phaseKey])
@@ -1289,12 +1312,34 @@ document.getElementById("replayinfo").addEventListener("click", function() {
         console.warn(`No dialogue found for ${missionKey} phase ${currentmissionphase}`);
     }
 }
+function EndOfPhaseDialogue() { 
+    const endPhaseKey = `endPhase${currentmissionphase - 1}`;
+    const nextPhaseKey = `phaseDialogue${currentmissionphase}`;
+
+    // Get the end-of-phase and next-phase dialogue lines
+    const endPhaseLines = missionData[missionKey][endPhaseKey] || [];
+    const nextPhaseLines = missionData[missionKey][nextPhaseKey] || [];
+
+    if (endPhaseLines.length === 0 && nextPhaseLines.length === 0) {
+        console.warn(`No dialogue found for ${missionKey} end of phase ${currentmissionphase - 1} or phase ${currentmissionphase}`);
+        return;
+    }
+
+    // Combine dialogues: end phase, pause, then next phase
+    const combinedDialogue = [...endPhaseLines, "*PAUSE*", ...nextPhaseLines];
+
+    // Display the combined dialogue
+    showDialogueLines(combinedDialogue);
+}
+
+
   let objectiveTracker = [] //objective tracker is copy of 'objectives' from the current selected mission
 
 //initalize the current mission using missionData aswell as missionumber
 function initializeMission(){
 
-  fs = missionData[missionKey].datafs;
+ fs = { ...missionData[missionKey].datafs };
+
 
   const objectives = missionData[missionKey].objectives;
   objectiveTracker = objectives;
@@ -1308,6 +1353,14 @@ function completeObjective(node, i, name) {
     // node is the file system node getting sent to test for completion
     // i is the type of objective trying to get completed 
     // code for 'i': 1 = upload, 2 = access dir, 3 = file deleted/not exist 
+    if (!node.code) return;
+
+// Get phase from 4th digit of code
+const nodePhase = parseInt(node.code.split(".")[3]) || 0;
+
+// Only allow completion if it matches current mission phase
+if (nodePhase !== currentmissionphase) return;
+
 
     switch (i) {
         case 1: {
@@ -1394,46 +1447,60 @@ function completeObjective(node, i, name) {
     }
     }
 }
+function completePhaseObjectives(obj) {
+  // obj is objectiveTracker or its elements
+  if (!obj) return;
 
-function completePhaseObjectives(obj){
-    //obj is objectiveTracker
-      if (obj && typeof obj === 'object') {
+  if (Array.isArray(obj)) {
+    // If it's an array, loop through each item
+    obj.forEach(item => completePhaseObjectives(item));
+  } else if (typeof obj === "object") {
+    // If it's an object, check if it has a code
+    if (obj.code) {
+      const parts = obj.code.split(".");
+      const phase = parseInt(parts[3]) || 0; // 4th number is phase
+      if (phase === currentmissionphase) {
+        obj.status = "completed";
+      }
+    }
+
+    // Recursively check all keys in case there are nested objects
     for (const key in obj) {
-      if (!obj.hasOwnProperty(key)) continue;
-
-      if (key === 'status') {
-        obj[key] = 'completed';
-      } else if (typeof obj[key] === 'object') {
-        completePhaseObjectives(obj[key]); // recursive call for nested objects or arrays
+      if (obj.hasOwnProperty(key) && typeof obj[key] === "object") {
+        completePhaseObjectives(obj[key]);
       }
     }
   }
 }
+
 
 function updateObjectives() {
   // Clear current content
   objectivecontent.innerHTML = "";
 
   // Sort objectives by the 3rd unit in the code
-  const sortedObjectives = [...objectiveTracker].sort((a, b) => {
-    // Split the code by periods
-    const aParts = a.code.split(".");
-    const bParts = b.code.split(".");
+  const sortedObjectives = [...objectiveTracker]
+    .sort((a, b) => {
+      const aParts = a.code.split(".");
+      const bParts = b.code.split(".");
 
-    // Get the 3rd unit (index 2). Failsafe: default to Infinity if missing
-    const aThird = parseInt(aParts[2]) || Infinity;
-    const bThird = parseInt(bParts[2]) || Infinity;
+      const aThird = parseInt(aParts[2]) || Infinity;
+      const bThird = parseInt(bParts[2]) || Infinity;
 
-    // Compare numbers
-    return aThird - bThird;
-  });
+      return aThird - bThird;
+    })
+    // Only include objectives that match the current mission phase
+    .filter(obj => {
+      const parts = obj.code.split(".");
+      const phase = parseInt(parts[3]) || 0; // 4th number (index 3)
+      return phase === currentmissionphase;
+    });
 
-  // Loop through each sorted objective
+  // Loop through each sorted & filtered objective
   sortedObjectives.forEach((obj, index) => {
     const span = document.createElement("span");
     span.id = index + 1; // Optional: unique id
 
-    // Add checkbox + strike-through if completed
     if (obj.status === "completed") {
       span.style.textDecoration = "line-through";
       span.textContent = "☑ " + obj.text;
@@ -1441,16 +1508,106 @@ function updateObjectives() {
       span.textContent = "☐ " + obj.text;
     }
 
-    // Append span and a line break
     objectivecontent.appendChild(span);
     objectivecontent.appendChild(document.createElement("br"));
   });
+
+  checkPhaseCompletion();
 }
 
+function checkPhaseCompletion() {
+    
+  const currentPhaseObjectives = objectiveTracker.filter(obj => {
+    const phase = parseInt(obj.code.split(".")[3]) || 0;
+    return phase === currentmissionphase;
+  });
+
+  // If there are no objectives for this phase, do nothing
+  if (currentPhaseObjectives.length === 0) return;
+
+  // Check if all current phase objectives are completed
+  const allCompleted = currentPhaseObjectives.every(obj => obj.status === "completed");
+
+  if (allCompleted) {
+    advancePhase();
+  }
+}
+
+
+
+
+function renderAvailableCommands(currentmissionphase, availableCommands) {
+  const commandcolumn = document.getElementById("commandcolumn");
+  if (!commandcolumn) return;
+
+  // Clear previous commands
+  commandcolumn.innerHTML = "";
+
+  // Get commands for the current phase
+  const commands = availableCommands[currentmissionphase] || [];
+
+  // Render each command separated by <br>
+  commands.forEach(cmd => {
+    const span = document.createElement("span");
+    span.textContent = cmd;
+    commandcolumn.appendChild(span);
+    commandcolumn.appendChild(document.createElement("br"));
+  });
+}
+
+
+function advancePhase() {
+    currentmissionphase++;
+    phaseKey =`phaseDialogue${currentmissionphase}`; 
+    EndOfPhaseDialogue();
+    updateObjectives();
+    renderAvailableCommands(currentmissionphase, availableCommands);
+}
 
 if (inmission){
   initializeMission()
   DisplayCurrentDialogue();
   updateObjectives();
- 
+  renderAvailableCommands(currentmissionphase, availableCommands);
 }
+
+function checkObjectiveCodeConsistency(objectiveTracker, filesystem) {
+  // 1. Collect all codes from objectiveTracker
+  const trackerCodes = new Set(objectiveTracker.map(obj => obj.code));
+
+  // 2. Recursively collect all codes from filesystem nodes
+  const filesystemCodes = new Set();
+
+  function collectCodes(obj) {
+    if (!obj || typeof obj !== "object") return;
+
+    if (obj.code) {
+      filesystemCodes.add(obj.code);
+    }
+
+    // Recursively check nested objects
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === "object") {
+        collectCodes(obj[key]);
+      }
+    }
+  }
+
+  collectCodes(filesystem);
+
+  // 3. Check for codes in tracker not in filesystem
+  trackerCodes.forEach(code => {
+    if (!filesystemCodes.has(code)) {
+      console.warn(`WARNING: ObjectiveTracker code '${code}' has no matching filesystem node.`);
+    }
+  });
+
+  // 4. Check for codes in filesystem not in tracker
+  filesystemCodes.forEach(code => {
+    if (!trackerCodes.has(code)) {
+      console.warn(`WARNING: Filesystem node code '${code}' has no matching objective in ObjectiveTracker.`);
+    }
+  });
+}
+
+checkObjectiveCodeConsistency(objectiveTracker, fs);

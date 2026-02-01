@@ -8,6 +8,17 @@ export const mission1 = {
 name: "Orientation Protocol", 
 
 
+      //availablecommands, the numbers are the phases. so if 2 contains cd and ls then in phase 2 cd and ls are avaliable. 
+      availableCommands: {
+      1: [
+        "cd", "help"
+      ],
+      2:[
+        "cd", "ls" 
+      ],
+        
+    },
+
     objectives: [
       {
         code: "1.f.1.1",
@@ -25,7 +36,7 @@ name: "Orientation Protocol",
         status:"pending",
       },
       {     
-        code: "4.f.4.1",
+        code: "4.f.4.2",
         text: "Read 'passwd' file",
         status:"pending",
       },
@@ -59,7 +70,7 @@ name: "Orientation Protocol",
         code:'2.d.2.1',
         children: {
           'passwd': {
-            code: "4.f.4.1",
+            code: "4.f.4.2",
             type: 'file',
             content:
 `root:x:0:0:root:/root:/bin/bash
@@ -91,5 +102,9 @@ user:x:1000:1000:Regular User:/home/user:/bin/bash`
               "You opened the wrong terminal.",
               "Now you're going to help me.",
               "*END*"], 
+      endPhase1:[
+        "Good your a fast learner.",
+        "Now onto your next objective."
+      ],
       phaseDialogue2: ["Placeholder phase2 mission 1"],
     }

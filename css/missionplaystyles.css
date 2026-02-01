@@ -150,7 +150,6 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
-    vertical-align: center;
     position: absolute;
     width: 200px;
     height: 50px;
