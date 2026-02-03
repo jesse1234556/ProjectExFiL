@@ -5,8 +5,7 @@
   //type of objective legend: 1 = upload, 2 = access directory, 3 = delete file or directory, 4 = read file (cat).
  
 export const mission1 = {
-name: "Orientation Protocol", 
-
+  name: "Orientation Protocol", 
 
       //availablecommands, the numbers are the phases. so if 2 contains cd and ls then in phase 2 cd and ls are avaliable. 
       availableCommands: {
@@ -23,22 +22,26 @@ name: "Orientation Protocol",
       {
         code: "1.f.1.1",
         text:"Upload notes.txt", 
-        status:"pending",
       },
       {
         code: "1.f.3.1",
         text:"Upload passwords.txt",
-        status:"pending",
+        
       },
       {
         code: "2.d.2.1",
         text: "Access 'etc' directory",
-        status:"pending",
+        
+      },
+      { 
+        code: "3.d.4.1",
+        text:"Delete 'user' directory",
+         
       },
       {     
         code: "4.f.4.2",
         text: "Read 'passwd' file",
-        status:"pending",
+        
       },
     ]
   ,
@@ -84,6 +87,7 @@ user:x:1000:1000:Regular User:/home/user:/bin/bash`
         home: true,
         children: {
           'user': {
+            code: '3.d.4.1',
             type: 'dir',
             children: {
               'notes.txt': { type: 'file', code: '1.f.1.1', content: 'My test notes' }

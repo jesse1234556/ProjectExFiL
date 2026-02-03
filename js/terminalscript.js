@@ -8,7 +8,7 @@ const missionData = {
     mission1,
 }
 
-let commandsrestricted = true; 
+let commandsrestricted = false; 
 let inmission = false; 
 let currentmissionphase; 
 
@@ -862,6 +862,14 @@ rm: {
             }
         }
 
+        if (inmission){
+        if (!node.code || !node.code.startsWith("3")) {
+            printToTerminal("Permission Denied");
+            return;
+        }
+        completeObjective(node, 3, args[0]);
+     }
+
         // Recursive delete function
         const deleteNode = (n) => {
             if (n.type === 'dir') {
@@ -910,7 +918,12 @@ const listOfKeys = Object.keys(commands).join(", ")
 //help command outside of commands object because cant print listofKeys since it doesnt exist before getting defined
 commands.help = {
     description: 'Show available commands', 
-    execute: () => printToTerminal('Available commands: help, ' + availableCommands[currentmissionphase].join(', '))
+    execute: () => {
+        if (inmission){
+        printToTerminal('Available commands: help, ' + availableCommands[currentmissionphase].join(', '))
+        } else printToTerminal ('Available commands: help, ' + listOfKeys);
+    }
+
 }
 let historyIndex = null; // tracks current position in history
 
@@ -1039,11 +1052,13 @@ if (e.key === 'Enter') {
 
     if (commands[cmd]) {
         let commandAvailable = false;
+        if (inmission){
         for (let i = 0; i < availableCommands[currentmissionphase].length; i++){
             if (cmd == availableCommands[currentmissionphase][i]) {
                 commandAvailable = true
             }
         }
+    } else commandAvailable = true; 
         if (commandAvailable || !commandsrestricted){
         commands[cmd].execute(args);
         } else {
@@ -1097,8 +1112,9 @@ const closeBtn = document.getElementById("closeDialogue");
 const dialogueTerminal = document.getElementById("dialogueTerminal");
 const continueButton = document.getElementById("continuebuttondialogue")
 
+if (continueButton != null){
 continueButton.style.userSelect = "none";
-
+}
 let dialogueSession = 0;
 
 let canContinue = false;
@@ -1289,9 +1305,11 @@ if (
 
   }
 
+   if (inmission){
 document.getElementById("replayinfo").addEventListener("click", function() {
     DisplayCurrentDialogue();
 });
+   }
 
 
 
@@ -1343,6 +1361,9 @@ function initializeMission(){
 
   const objectives = missionData[missionKey].objectives;
   objectiveTracker = objectives;
+  objectiveTracker.forEach(obj => {
+    obj.status = 'pending'; 
+  });
   
 }
 
@@ -1362,7 +1383,13 @@ const nodePhase = parseInt(node.code.split(".")[3]) || 0;
 if (nodePhase !== currentmissionphase) return;
 
 
+            if (!node.code) {
+                return;
+            }
+
+
     switch (i) {
+        
         case 1: {
             if (!node.code) {
                 console.log("Upload failed: Node does not have a code");
@@ -1396,7 +1423,6 @@ if (nodePhase !== currentmissionphase) return;
             break;
         }
         case 2: {
-            console.log("HELLOOO");
 
             if (!node.code) {
                 return;
@@ -1421,6 +1447,24 @@ if (nodePhase !== currentmissionphase) return;
             updateObjectives();
             printToTerminal(`Objective completed by entering '${name}'`);
         }
+    case 3: {
+         const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.code);
+
+            if (objectiveIndex === -1) {
+                console.log(`Access directory failed: No objective found with code '${node.code}'`);
+                return;
+            }
+
+            const objective = objectiveTracker[objectiveIndex];
+
+            if (objective.status === 'completed') {
+                return;
+            }
+             objective.status = 'completed';
+            updateObjectives();
+            printToTerminal(`Objective completed by deleting '${name}'`);
+
+    }
     case 4: {
          if (!node || !node.code) {
                 return;
@@ -1543,9 +1587,9 @@ function renderAvailableCommands(currentmissionphase, availableCommands) {
   // Clear previous commands
   commandcolumn.innerHTML = "";
 
+  
   // Get commands for the current phase
-  const commands = availableCommands[currentmissionphase] || [];
-
+    const commands = (availableCommands[currentmissionphase] || []).filter(cmd => !extraCommands.includes(cmd));
   // Render each command separated by <br>
   commands.forEach(cmd => {
     const span = document.createElement("span");
