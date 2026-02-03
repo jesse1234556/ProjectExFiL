@@ -1,8 +1,6 @@
 const startbutton = document.getElementById("start");
 const homebutton = document.getElementById("home");
 
-
-
 const missionStars = document.getElementById("mission-stars");          // ★ ☆ stars
 const missionTitleText = document.getElementById("mission-title-text"); // The span with the title text
 const missionSummary = document.getElementById("mission-summary");                // summary text
@@ -31,8 +29,8 @@ const missionListData = [
     id: 2,
     title: "Honeypot Simulator",
     stars: 2,
-    summary: "Interact with a decoy system to identify suspicious behavior patterns.",
-    tools: ["netstat", "grep", "whois"]
+    summary: "Interact with a decoy system to improve your skills.",
+    tools: ["cd, ls, cat, mkdir, "]
   },
   {
     id: 3,

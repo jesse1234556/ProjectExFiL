@@ -1,0 +1,157 @@
+body {
+     background: #181927;
+}
+/* Modal Container */
+.confirmation-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 25%;
+    height: 25%;
+    background-color: #10122b;
+    border: 2px solid #00f0ff;
+    box-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff inset;
+    border-radius: 10px;
+    z-index: 1000;
+
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+.confirmation-modal .close-btn:hover {
+    background-color: #0a0c33;
+    box-shadow: 0 0 10px #00f0ff, 0 0 15px #00f0ff inset;
+    border-color: #00ffff;
+}
+
+/* Modal Content */
+.confirmation-modal .modal-content {
+    text-align: center;
+    color: #00deee;
+    font-family: 'Comfortaa', sans-serif;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Buttons Container */
+.confirmation-modal .modal-buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+/* Are You Sure Button (Red) */
+.confirmation-modal .confirm-btn {
+    font-family: 'Comfortaa', sans-serif;
+    font-size: medium;
+    color: #ff4c4c;
+    background-color: #181927;
+    border: 2px solid #ff4c4c;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.confirmation-modal .confirm-btn:hover {
+    background-color: #ff4c4c;
+    color: #181927;
+    box-shadow: 0 0 10px #ff4c4c, 0 0 15px #ff4c4c inset;
+    border-color: #ff0000;
+}
+
+/* Cancel Button */
+.confirmation-modal .cancel-btn {
+    font-family: 'Comfortaa', sans-serif;
+    font-size: medium;
+    color: #00deee;
+    background-color: #181927;
+    border: 2px solid #00f0ff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.confirmation-modal .cancel-btn:hover {
+    background-color: #0a0c33;
+    box-shadow: 0 0 10px #00f0ff, 0 0 15px #00f0ff inset;
+    border-color: #00ffff;
+}
+
+.homebutton{
+    color: #00f0ff;
+    margin: 50px;
+    width: 50px;
+    height: 50px;
+    padding: 10px;
+    background-color: #02041d;
+    border: 2px solid #00f0ff;
+    box-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff inset;
+    position: fixed;
+    top: 0;       /* distance from the top */
+    right: 0;     /* distance from the right */
+    z-index: 100; /* optional, ensures it’s above other elements */
+}
+
+.homebutton:hover {
+    background-color: #0a0c33;
+    box-shadow: 0 0 10px #00f0ff, 0 0 15px #00f0ff inset; 
+    box-shadow: 0 0 15px #00f0ff, 0 0 15px #00f0ff inset; 
+    border-color: #00ffff; /* brighter neon cyan */
+    cursor: pointer; /* indicates it's interactive */
+    transition: all 0.1s ease; /* smooth transition */
+}
+/* Options Menu Container */
+.options-menu {
+    position: fixed;        /* Make it relative to the viewport */
+    top: 50%;               /* Move top to center */
+    left: 50%;              /* Move left to center */
+    transform: translate(-50%, -50%); /* Offset to truly center */
+    
+    width: 50%;             /* 50% of viewport width */
+    height: 50%;            /* 50% of viewport height */
+
+    background-color: #10122b; /* slightly darker than page background (#181927) */
+    border: 2px solid #00f0ff;
+    box-shadow: 0 0 5px #00f0ff, 0 0 10px #00f0ff inset;
+    padding: 15px 20px;
+    border-radius: 10px;
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#resetProgressButton {
+    position: fixed;       /* Position relative to the viewport */
+    bottom: 20px;          /* Distance from the bottom */
+    left: 20px;            /* Distance from the left */
+    font-family: 'Comfortaa', sans-serif;
+    font-size: medium;
+    color: #00deee;
+    background-color: #181927; /* slightly lighter than the menu box */
+    border: 2px solid #00f0ff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    user-select: none;
+    z-index: 100;          /* ensure it’s above other elements */
+}
+
+#resetProgressButton:hover {
+    background-color: #0a0c33;
+    box-shadow: 0 0 10px #00f0ff, 0 0 15px #00f0ff inset;
+    border-color: #00ffff;
+}
+

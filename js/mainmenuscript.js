@@ -1,7 +1,7 @@
 // Option sets
 const mainMenuOptions = [
     { text: "> Play", target: "playOptions", color: "#00f0ff" },
-    { text: "> Tutorial", target: "tutorial.html", color: "#00f0ff" },
+    { text: "> Options", target: "options.html", color: "#00f0ff" },
     { text: "> Sandbox", target: "sandbox.html", color: "#00f0ff" },
 ];
 

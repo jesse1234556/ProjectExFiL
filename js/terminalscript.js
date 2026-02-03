@@ -2,6 +2,7 @@ const terminalInput = document.getElementById('InputLine');
 const terminal = document.getElementById('terminal');
 const body = document.body;
 
+
 import { mission1} from "../missions/mission1.js";
 
 const missionData = {
@@ -10,16 +11,12 @@ const missionData = {
 
 let commandsrestricted = false; 
 let inmission = false; 
-let currentmissionphase; 
+let currentmissionphase;
 
-/*
-//add when publishing 
-window.addEventListener('beforeunload', function (e) {
-    // Modern browsers ignore the custom message, but it's still required to trigger the prompt
-    e.preventDefault(); // standard way to trigger the prompt
-    e.returnValue = ''; // Chrome requires setting returnValue to a non-undefined value
-});*/
-
+let intutorial = false; 
+if (GameSave.state.tutorialdone == false){
+    intutorial = true; 
+}
 
 if (window.location.pathname.endsWith("missionplay.html")) {
   inmission = true; 
@@ -28,6 +25,21 @@ if (window.location.pathname.endsWith("missionplay.html")) {
 if (inmission == true){
   currentmissionphase = 1; 
 }
+
+
+/*
+//add when publishing 
+
+window.addEventListener('beforeunload', function (e) {
+    if (inTutorial) {
+        return; // allow unload normally
+    }
+
+    e.preventDefault();
+    e.returnValue = ''; // required to trigger the prompt
+});
+});*/
+
 
 const env = {
   user: 'Guest',              // username
@@ -87,6 +99,9 @@ function removeLines() {
 
 
 function RenderLineText() {
+    if (intutorial){
+        return;
+    }
     let renderedText = '';
 
     for (let i = 0; i < inputText.length; i++) {
@@ -116,9 +131,9 @@ function startCursorBlink() {
         RenderLineText();
     }, 500);
 }
-
+if (!intutorial){
 startCursorBlink();
-
+}
 
 // Assuming terminalInput is your input container element
 body.addEventListener('keydown', (event) => {
@@ -919,7 +934,7 @@ const listOfKeys = Object.keys(commands).join(", ")
 commands.help = {
     description: 'Show available commands', 
     execute: () => {
-        if (inmission){
+        if (inmission && commandsrestricted){
         printToTerminal('Available commands: help, ' + availableCommands[currentmissionphase].join(', '))
         } else printToTerminal ('Available commands: help, ' + listOfKeys);
     }
@@ -1053,11 +1068,15 @@ if (e.key === 'Enter') {
     if (commands[cmd]) {
         let commandAvailable = false;
         if (inmission){
-        for (let i = 0; i < availableCommands[currentmissionphase].length; i++){
-            if (cmd == availableCommands[currentmissionphase][i]) {
-                commandAvailable = true
-            }
+       if (availableCommands[currentmissionphase] && Array.isArray(availableCommands[currentmissionphase])) {
+    for (let i = 0; i < availableCommands[currentmissionphase].length; i++) {
+        if (cmd === availableCommands[currentmissionphase][i]) {
+            commandAvailable = true;
+            break; // optional: stop looping once found
         }
+    }
+}
+
     } else commandAvailable = true; 
         if (commandAvailable || !commandsrestricted){
         commands[cmd].execute(args);
@@ -1089,10 +1108,12 @@ if (e.key === 'Enter') {
 
 })
 
+if (!intutorial){
 // Welcome message
 printToTerminal('Welcome to the JS Terminal! Type "help" for commands.');
 //show empty terminal input line
 RenderLineText();
+}
 
 
 
@@ -1145,6 +1166,9 @@ closeBtn.addEventListener("click", () => {
 
 document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && dialogueRunning) {
+        if (missionData[missionKey].amountOfPhases < currentmissionphase){
+        return;
+    }
         closeDialogue();
     }
 });
@@ -1155,6 +1179,9 @@ function openDialogue() {
     darkoverlay.style.display = "block"
     dialogueBox.style.display = "block";
     canContinue = false;
+    if (missionData[missionKey].amountOfPhases < currentmissionphase){
+        closeBtn.style.display = "none";
+    }
 }
 
 // random symbols for the decoding effect
@@ -1231,6 +1258,12 @@ async function showDialogueLines(lines, delay = 350) {
         // ---- END COMMAND ----
         if (line === DIALOGUE_COMMANDS.END) {
             continueButton.textContent = "Close";
+            console.log (missionData[missionKey].amountOfPhases + "THISS!");
+            console.log(currentmissionphase + "THISASWEL");
+            if (missionData[missionKey].amountOfPhases < currentmissionphase){
+                continueButton.textContent = "Return to Mission Select";
+            }
+            
             continueButton.style.display = "flex";
 
             await waitForContinue(sessionId);
@@ -1251,10 +1284,24 @@ if (next && !Object.values(DIALOGUE_COMMANDS).includes(next)) {
 
     // fallback end if no *END* token
     continueButton.textContent = "Close";
+    if (missionData[missionKey].amountOfPhases < currentmissionphase){
+                continueButton.textContent = "Return to Mission Select";
+            }
     continueButton.style.display = "flex";
     await waitForContinue(sessionId);
 closeDialogue();
 }
+
+//button when mission is complete
+continueButton.addEventListener("click", function() {
+    if (continueButton.textContent == "Return to Mission Select") {
+        if (GameSave.state.highestMission < missionnumber) {
+            GameSave.state.highestMission = missionnumber;
+        }
+        GameSave.save();        
+       window.location.href = `missionselect.html`;
+    }
+});
 
 function waitForContinue(sessionId) {
     return new Promise(resolve => {
@@ -1342,10 +1389,14 @@ function EndOfPhaseDialogue() {
         console.warn(`No dialogue found for ${missionKey} end of phase ${currentmissionphase - 1} or phase ${currentmissionphase}`);
         return;
     }
-
+ let combinedDialogue; 
     // Combine dialogues: end phase, pause, then next phase
-    const combinedDialogue = [...endPhaseLines, "*PAUSE*", ...nextPhaseLines];
-
+    if (missionData[missionKey].amountOfPhases < currentmissionphase){
+    combinedDialogue = [...endPhaseLines];
+    } else 
+       {
+          combinedDialogue = [...endPhaseLines, "*PAUSE*", ...nextPhaseLines];
+       }
     // Display the combined dialogue
     showDialogueLines(combinedDialogue);
 }
@@ -1608,7 +1659,8 @@ function advancePhase() {
     renderAvailableCommands(currentmissionphase, availableCommands);
 }
 
-if (inmission){
+
+if (inmission && !intutorial){
   initializeMission()
   DisplayCurrentDialogue();
   updateObjectives();
@@ -1655,3 +1707,21 @@ function checkObjectiveCodeConsistency(objectiveTracker, filesystem) {
 }
 
 checkObjectiveCodeConsistency(objectiveTracker, fs);
+
+//------tutorialintroductionstuff 
+
+
+function getChildren(element) {
+  return Array.from(element.children);
+}
+
+const sidebar = document.getElementById("sidebar");
+const replayimg = document.getElementById("replayinfo");
+const hackerimg = document.getElementById("hackerimgid"); 
+
+if (intutorial) {
+    sidebar.style.filter = 'blur(10px)';
+    replayimg.classList.add('disabled');
+    hackerimg.classList.add('disabled');
+};
+

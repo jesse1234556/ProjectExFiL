@@ -7,6 +7,7 @@ window.GameSave = (() => {
       version: 1,
       timestamp: Date.now(),
       state: {
+        tutorialdone: false,
         money: 0,
         highestMission: 0,
         hacksCompleted: [],
@@ -36,6 +37,7 @@ window.GameSave = (() => {
     return currentSave;
   }
 
+  //still on version 1.0 so nothing to migrate
   function migrateSave(save) {
     switch(save.version) {
       default: break;

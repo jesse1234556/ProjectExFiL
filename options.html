@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project ExFiL</title>
+    <link rel="stylesheet" href="./css/optionstyles.css">
+</head>
+<body>
+     <svg class="homebutton" id="home" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3z"/>
+</svg>
+<div class="options-menu">
+    <button id="resetProgressButton">Reset Progress</button>
+</div>
+<div class="confirmation-modal">
+    <div class="modal-content">
+        <p>Are you sure you want to reset all progress?<br> This cannot be undone.</p>
+        <div class="modal-buttons">
+            <button id="confirmBtn" class="confirm-btn">Confirm</button>
+            <button id="cancelBtn" class="cancel-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+
+<script src="./js/GameSave.js"></script>
+<script src="./js/optionscript.js"></script>
+</body>
+</html>

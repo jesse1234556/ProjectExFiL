@@ -6,7 +6,7 @@
  
 export const mission1 = {
   name: "Orientation Protocol", 
-
+  amountOfPhases: 2,
       //availablecommands, the numbers are the phases. so if 2 contains cd and ls then in phase 2 cd and ls are avaliable. 
       availableCommands: {
       1: [
@@ -111,4 +111,5 @@ user:x:1000:1000:Regular User:/home/user:/bin/bash`
         "Now onto your next objective."
       ],
       phaseDialogue2: ["Placeholder phase2 mission 1"],
+      endPhase2: ["Okay you have done your job,", "now leave before I hack you too."]
     }

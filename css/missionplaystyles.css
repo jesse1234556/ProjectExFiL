@@ -10,10 +10,12 @@ html, body {
 }
 
 body{
+    
     margin-left: 250px;
 }
 
 .terminal {
+    
     overflow-y: scroll;       /* enables scrolling */
     scrollbar-width: none;    /* Firefox */
     background: #181927;     /* darker bluish background */
@@ -30,7 +32,7 @@ body{
 }
 
 .sidebar {
-    margin-right: 5px;
+       margin-right: 5px;
     display: flex;
     flex-direction: column;
     position: fixed;
@@ -144,6 +146,7 @@ body{
 }
 
 #continuebuttondialogue {
+    text-align: center;
     user-select: none;
     font-family: Comfortaa;
     font-size: larger;
@@ -239,4 +242,9 @@ body{
     border-color: #00ffff; /* brighter neon cyan */
     cursor: pointer; /* indicates it's interactive */
     transition: all 0.1s ease; /* smooth transition */
+}
+
+.replaybuttonimgwrap.disabled {
+     pointer-events: none; /* disables hover/click entirely */
+    cursor: default; /* show it's inactive */
 }
