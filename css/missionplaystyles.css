@@ -165,7 +165,7 @@ body{
 }
 
 .sidebarcontent {
-    width: 100%;
+    width: 85%;
     height: 100%;
     padding: 10px;
     font-family: 'Comfortaa';
@@ -184,10 +184,6 @@ body{
     width: 100%;
     text-align: center;
    
-}
-
-#objectivecontent {
-    margin-left: 25px;
 }
 
 .sidebarcontentimg {

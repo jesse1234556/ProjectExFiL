@@ -13,3 +13,9 @@ This system is controlled through a terminal.
 • Press Tab to auto-complete paths
 
 When ready, press Enter.
+
+"Terminal Tips" Section
+
+implement 'cd -' to go back to previous directory 
+
+I think il turn it into a "terminal tips" button that will tell you useful terminal tips (down up arrow, tab completion, general tips idk) but have it locked until you complete the first mission so yuo actually know what its talking about (my tutorial is really good). On another note, what else should I put in the terminal tips page? Btw my game is a simulated JS terminal game. Some missions are about like speed others problem solving etc. So What things might i put there?

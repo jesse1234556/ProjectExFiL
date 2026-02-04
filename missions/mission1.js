@@ -2,15 +2,14 @@
   //(f/d) is file or directory
   //so first objective is to upload file in phase 1, would be 1 (for upload).f.1 (for first ID).1 (for phase 1)
   //mission ID is typeOfObjetive.(f/d).IDWithinPhase.phaseCurrenetlyIn
-  //type of objective legend: 1 = upload, 2 = access directory, 3 = delete file or directory, 4 = read file (cat).
- 
+  //type of objective legend: 1 = upload, 2 = access directory, 3 = delete file or directory, 4 = read file (cat). x = custom
 export const mission1 = {
   name: "Orientation Protocol", 
-  amountOfPhases: 2,
+  amountOfPhases: 3,
       //availablecommands, the numbers are the phases. so if 2 contains cd and ls then in phase 2 cd and ls are avaliable. 
       availableCommands: {
       1: [
-        "cd", "help"
+        "cd"
       ],
       2:[
         "cd", "ls" 
@@ -19,36 +18,25 @@ export const mission1 = {
     },
 
     objectives: [
-      {
-        code: "1.f.1.1",
-        text:"Upload notes.txt", 
-      },
-      {
-        code: "1.f.3.1",
-        text:"Upload passwords.txt",
-        
-      },
-      {
-        code: "2.d.2.1",
-        text: "Access 'etc' directory",
-        
-      },
-      { 
-        code: "3.d.4.1",
-        text:"Delete 'user' directory",
-         
-      },
-      {     
-        code: "4.f.4.2",
-        text: "Read 'passwd' file",
-        
-      },
+     {
+      text: "Type 'cd documents'",
+      code: "2.d.1.1"
+     },
+     {
+      text: "Use 'ls' to view the contents of the directory",
+      code: "x.d.1.2"
+     },
+     {
+      text: "Use 'cd' to enter into the correct directory",
+      code: '2.d.2.2'
+     },
+     {
+      text: "Type 'upload secret.png'",
+      code: '1.f.1.3',
+     }
+
     ]
   ,
-
-
-
-
     //datafs is the file system but in data instead of the real current one. 
     datafs: {
   user: 'Guest',
@@ -56,41 +44,50 @@ export const mission1 = {
   '/': {
     type: 'dir',
     children: {
-      'passwords.txt': 
-      {
-        type: 'file', 
-        content:"brrx153",
-        code:"1.f.3.1"},
-      'bin': {
+      'shadow': {
         type: 'dir',
         children: {
-          'ls': { type: 'file', content: 'ELF binary' }
-        }
-      },
-
-      'etc': {
-        type: 'dir',
-        code:'2.d.2.1',
-        children: {
-          'passwd': {
-            code: "4.f.4.2",
+          'secret.txt': {
             type: 'file',
-            content:
-`root:x:0:0:root:/root:/bin/bash
-user:x:1000:1000:Regular User:/home/user:/bin/bash`
-          }
+            code: '1.f.2.1',
+            content: 'you shouldnt be able to see this, how.',
+          },
         }
       },
-
       'home': {
         type: 'dir',
         home: true,
         children: {
-          'user': {
-            code: '3.d.4.1',
+          'documents': {
+            code: '2.d.1.1',
+            customcode:'x.d.1.2',
             type: 'dir',
             children: {
-              'notes.txt': { type: 'file', code: '1.f.1.1', content: 'My test notes' }
+             'NotThisOne':{
+              type: 'dir',
+              children: {
+              }
+             },
+             'NotThisOne2':{
+              type: 'dir',
+              children: {
+              }
+             },
+               'NotThisOne4':{
+              type: 'dir',
+              children: {
+              }
+             },
+             'ThisOne!': {
+              type: 'dir',
+              code: '2.d.2.2',
+              children:{
+                'secret.png': {
+                  type: 'file',
+                  code: '1.f.1.3'
+                }
+              }
+             }
             }
           }
         }
@@ -107,9 +104,10 @@ user:x:1000:1000:Regular User:/home/user:/bin/bash`
               "Now you're going to help me.",
               "*END*"], 
       endPhase1:[
-        "Good your a fast learner.",
-        "Now onto your next objective."
+        "Good, now I know you can read.",
+        "Time to see how competent you are."
       ],
-      phaseDialogue2: ["Placeholder phase2 mission 1"],
-      endPhase2: ["Okay you have done your job,", "now leave before I hack you too."]
+      phaseDialogue2: ["Complete the objectives listed in a timely matter."],
+      endPhase2: ["Okay, you seem like a competent operator.", "Now time for the good stuff."],
+      phaseDialogue3: ["Upload that secret image file to me.", "Quickly please."],
     }

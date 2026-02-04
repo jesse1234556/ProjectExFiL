@@ -7,7 +7,7 @@ const mainMenuOptions = [
 
 const playOptions = [
     { text: "> New Game", target: "dashboard.html", color: "#00f0ff" },
-    { text: "> Load Game", target: "loadgame.html", color: "#00f0ff" },
+    { text: "> Terminal Tips", target: "loadgame.html", color: "#00f0ff" },
     { text: "> Back", target: "mainMenuOptions", color: "#00f0ff" },
 ];
 

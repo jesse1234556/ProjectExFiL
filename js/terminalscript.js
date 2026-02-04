@@ -13,14 +13,16 @@ let commandsrestricted = false;
 let inmission = false; 
 let currentmissionphase;
 
-let intutorial = false; 
-if (GameSave.state.tutorialdone == false){
-    intutorial = true; 
-}
-
 if (window.location.pathname.endsWith("missionplay.html")) {
   inmission = true; 
 } 
+
+let intutorial = false; 
+if (inmission){
+if (GameSave.state.tutorialdone == false){
+    intutorial = true; 
+}}
+
 
 if (inmission == true){
   currentmissionphase = 1; 
@@ -565,6 +567,9 @@ const commands = {
         execute: (args) => {
             const path = args[0] || '.';
             const output = ls(path, env.cwd);     // use env.cwd
+            const filePath = resolve(path, env.cwd);
+       const fileNode = getNode(filePath);
+       completeObjective(fileNode, 'x', args[0], true);
             printToTerminal(output);
         }
     },
@@ -1293,6 +1298,7 @@ closeDialogue();
 }
 
 //button when mission is complete
+if (inmission){
 continueButton.addEventListener("click", function() {
     if (continueButton.textContent == "Return to Mission Select") {
         if (GameSave.state.highestMission < missionnumber) {
@@ -1301,7 +1307,7 @@ continueButton.addEventListener("click", function() {
         GameSave.save();        
        window.location.href = `missionselect.html`;
     }
-});
+});}
 
 function waitForContinue(sessionId) {
     return new Promise(resolve => {
@@ -1420,27 +1426,51 @@ function initializeMission(){
 
 const objectivecontent = document.getElementById("objectivecontent"); 
 
-function completeObjective(node, i, name) {
-    // name is the name of the node
-    // node is the file system node getting sent to test for completion
-    // i is the type of objective trying to get completed 
-    // code for 'i': 1 = upload, 2 = access dir, 3 = file deleted/not exist 
-    if (!node.code) return;
 
-// Get phase from 4th digit of code
-const nodePhase = parseInt(node.code.split(".")[3]) || 0;
+function completeObjective(node, i, name, customObjective = false) {
+    // Determine if this is a custom objective:
+    // - Use the passed-in customObjective if true/false
+    // - If not passed, defaults to false (regular code)
+    let isCustom = customObjective || (customObjective === null && node.customcode != null);
 
+    // Only proceed if at least one code exists
+    if (!node.code && !node.customcode) return;
+
+    // Decide which code to use
+    let codeToUse = isCustom ? node.customcode : node.code;
+
+    // Get phase from the 4th digit of the chosen code
+    let nodePhase = parseInt(codeToUse.split(".")[3]) || 0;
+
+//let nodePhase = parseInt(node.code.split(".")[3]) || 0; //old
 // Only allow completion if it matches current mission phase
 if (nodePhase !== currentmissionphase) return;
-
-
             if (!node.code) {
                 return;
             }
 
 
     switch (i) {
-        
+        case 'x': {
+                const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.customcode);
+
+          if (objectiveIndex === -1) {
+                console.log(`Access directory failed: No objective found with code '${node.code}'`);
+                return;
+            }
+
+             const objective = objectiveTracker[objectiveIndex]
+
+          if (objective.status === 'completed') {
+                 return;
+            }
+
+             objective.status = 'completed';
+            updateObjectives();
+            
+            break;
+        }
+
         case 1: {
             if (!node.code) {
                 console.log("Upload failed: Node does not have a code");
@@ -1570,31 +1600,34 @@ function completePhaseObjectives(obj) {
 
 
 function updateObjectives() {
-  // Clear current content
   objectivecontent.innerHTML = "";
 
-  // Sort objectives by the 3rd unit in the code
+  const normalizeCode = (code) => {
+    if (typeof code !== "string") return ["0", "0", "9999", "0"];
+    return code.split(".");
+  };
+
   const sortedObjectives = [...objectiveTracker]
     .sort((a, b) => {
-      const aParts = a.code.split(".");
-      const bParts = b.code.split(".");
+      const aParts = normalizeCode(a.code);
+      const bParts = normalizeCode(b.code);
 
-      const aThird = parseInt(aParts[2]) || Infinity;
-      const bThird = parseInt(bParts[2]) || Infinity;
+      const aThird = parseInt(aParts[2]) || 9999;
+      const bThird = parseInt(bParts[2]) || 9999;
 
       return aThird - bThird;
     })
-    // Only include objectives that match the current mission phase
     .filter(obj => {
-      const parts = obj.code.split(".");
-      const phase = parseInt(parts[3]) || 0; // 4th number (index 3)
+      if (!obj.code) return true; // allow no-code objectives always
+
+      const parts = normalizeCode(obj.code);
+      const phase = parseInt(parts[3]) || 0;
       return phase === currentmissionphase;
     });
 
-  // Loop through each sorted & filtered objective
   sortedObjectives.forEach((obj, index) => {
     const span = document.createElement("span");
-    span.id = index + 1; // Optional: unique id
+    span.id = index + 1;
 
     if (obj.status === "completed") {
       span.style.textDecoration = "line-through";
@@ -1611,9 +1644,12 @@ function updateObjectives() {
 }
 
 function checkPhaseCompletion() {
-    
+
   const currentPhaseObjectives = objectiveTracker.filter(obj => {
-    const phase = parseInt(obj.code.split(".")[3]) || 0;
+    if (typeof obj.code !== "string") return false; // ignore no-code objectives
+
+    const parts = obj.code.split(".");
+    const phase = parseInt(parts[3]) || 0;
     return phase === currentmissionphase;
   });
 
@@ -1621,7 +1657,9 @@ function checkPhaseCompletion() {
   if (currentPhaseObjectives.length === 0) return;
 
   // Check if all current phase objectives are completed
-  const allCompleted = currentPhaseObjectives.every(obj => obj.status === "completed");
+  const allCompleted = currentPhaseObjectives.every(
+    obj => obj.status === "completed"
+  );
 
   if (allCompleted) {
     advancePhase();
@@ -1667,6 +1705,12 @@ if (inmission && !intutorial){
   renderAvailableCommands(currentmissionphase, availableCommands);
 }
 
+if (intutorial && inmission) {
+    initializeMission();
+    updateObjectives();
+  renderAvailableCommands(currentmissionphase, availableCommands);
+} 
+
 function checkObjectiveCodeConsistency(objectiveTracker, filesystem) {
   // 1. Collect all codes from objectiveTracker
   const trackerCodes = new Set(objectiveTracker.map(obj => obj.code));
@@ -1711,6 +1755,7 @@ checkObjectiveCodeConsistency(objectiveTracker, fs);
 //------tutorialintroductionstuff 
 
 
+
 function getChildren(element) {
   return Array.from(element.children);
 }
@@ -1718,10 +1763,73 @@ function getChildren(element) {
 const sidebar = document.getElementById("sidebar");
 const replayimg = document.getElementById("replayinfo");
 const hackerimg = document.getElementById("hackerimgid"); 
+ let donetyping = false; 
+function typewriter(element, text, speed = 50) {
+    let i = 0;
+    element.innerHTML = "";
+
+    // Define special pauses after certain keywords or lines
+    const pauses = {
+        "INITIALIZING ORIENTATION PROTOCOL…": 1000, // 1 second pause
+        "• Type commands using your keyboard": 0,
+        "• Press Enter to execute a command": 0,
+        "• Use ↑ and ↓ to cycle previous commands": 0,
+        "• Press Tab to auto-complete paths": 1500 // pause after listing tips
+    };
+
+   
+    function typeNext() {
+        if (i < text.length) {
+            const char = text[i];
+            element.innerHTML += char === "\n" ? "<br>" : char;
+            i++;
+
+            // Check if the current text ends with any of our pause triggers
+            for (let trigger in pauses) {
+                if (element.innerHTML.replace(/<br>/g, "\n").endsWith(trigger)) {
+                    setTimeout(typeNext, pauses[trigger]);
+                    return;
+                }
+            }
+
+            setTimeout(typeNext, speed);
+         } else { 
+            donetyping = true; 
+         }
+    }
+
+    typeNext();
+}
+
+// Example usage:
+const content = `INITIALIZING ORIENTATION PROTOCOL…
+\n• Type commands using your keyboard
+\n• Press Enter to execute a command
+\n• Commands are case sensitive: a ≠ A
+\n• Press Tab to auto-complete paths
+\n
+When ready, press Enter.`;
+
+if (intutorial){
+typewriter(terminal, content, 40);
+
+}
 
 if (intutorial) {
     sidebar.style.filter = 'blur(10px)';
     replayimg.classList.add('disabled');
     hackerimg.classList.add('disabled');
+    // Listen for key presses on the whole document
+document.addEventListener('keydown', function(event) {
+    // Check if the key pressed is "Enter"
+    if (event.key === 'Enter') {
+        if (donetyping){
+       GameSave.state.tutorialdone = true;
+       GameSave.save();
+       this.location.reload();
+        }
+    }
+});
+
 };
 
