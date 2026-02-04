@@ -3,6 +3,7 @@
   //so first objective is to upload file in phase 1, would be 1 (for upload).f.1 (for first ID).1 (for phase 1)
   //mission ID is typeOfObjetive.(f/d).IDWithinPhase.phaseCurrenetlyIn
   //type of objective legend: 1 = upload, 2 = access directory, 3 = delete file or directory, 4 = read file (cat). x = custom
+  //objective code, the (f/d) could also be 't' which meants text. It still renders in order, in phase, but the 1st decimal is ignored. 
 export const mission1 = {
   name: "Orientation Protocol", 
   amountOfPhases: 3,
@@ -19,8 +20,16 @@ export const mission1 = {
 
     objectives: [
      {
-      text: "Type 'cd documents'",
+      text: "Type 'cd home'",
       code: "2.d.1.1"
+     },
+     {
+      text:"cd = Change Directory",
+      code: "t.t.3.1",
+     },
+     {
+      text:"",
+      code: "t.t.2.1",
      },
      {
       text: "Use 'ls' to view the contents of the directory",
@@ -42,6 +51,7 @@ export const mission1 = {
   user: 'Guest',
   hostname: 'ProjectExFiL',
   '/': {
+    home: true,
     type: 'dir',
     children: {
       'shadow': {
@@ -56,11 +66,11 @@ export const mission1 = {
       },
       'home': {
         type: 'dir',
-        home: true,
+        code: '2.d.1.1',
+        customcode:'x.d.1.2',
         children: {
           'documents': {
-            code: '2.d.1.1',
-            customcode:'x.d.1.2',
+            
             type: 'dir',
             children: {
              'NotThisOne':{
@@ -97,17 +107,10 @@ export const mission1 = {
 
 
       
-      phaseDialogue1: ["Hello, operator.",
-              "I’ve been observing your activity.",
-              "*PAUSE*",
-              "You opened the wrong terminal.",
-              "Now you're going to help me.",
-              "*END*"], 
-      endPhase1:[
-        "Good, now I know you can read.",
-        "Time to see how competent you are."
-      ],
-      phaseDialogue2: ["Complete the objectives listed in a timely matter."],
+    endPhase1: ["Hello, operator.",
+              "Welcome to Orientation.",
+    ],
+      phaseDialogue2: [ "You are inside a computer filesystem.",`You are always in a single directory.`,"Directories hold files and other directories." ],
       endPhase2: ["Okay, you seem like a competent operator.", "Now time for the good stuff."],
       phaseDialogue3: ["Upload that secret image file to me.", "Quickly please."],
     }

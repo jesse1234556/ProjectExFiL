@@ -1,4 +1,8 @@
 1st level
+
+Keep or no keep?: ${env.user}@${env.hostname}:${env.cwd}> 
+thats should i just have the terminal as /> or have the hostname and username?
+
 phase 1: type 'cd 
 
 start of the game: 

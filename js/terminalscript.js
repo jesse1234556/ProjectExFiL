@@ -9,6 +9,7 @@ const missionData = {
     mission1,
 }
 
+//mission stuff----
 let commandsrestricted = false; 
 let inmission = false; 
 let currentmissionphase;
@@ -16,6 +17,36 @@ let currentmissionphase;
 if (window.location.pathname.endsWith("missionplay.html")) {
   inmission = true; 
 } 
+
+
+ let missionnumber = 1;
+
+  if (inmission){
+
+  const params = new URLSearchParams(window.location.search);
+  const requestedMission = parseInt(params.get("mission"), 10);
+  console.log(requestedMission);
+  const highestCompleted = GameSave.state.highestMission;
+if (
+  Number.isNaN(requestedMission) ||   // not a number
+  requestedMission <= 0 ||             // negative or zero
+  requestedMission >= 7                // 7 or higher
+) {
+  window.location.href = "missionselect.html";
+} else {
+  missionnumber = requestedMission;
+  console.log(requestedMission);
+}
+
+
+  }
+
+   if (inmission){
+document.getElementById("replayinfo").addEventListener("click", function() {
+    DisplayCurrentDialogue();
+});
+   }
+
 
 let intutorial = false; 
 if (inmission){
@@ -28,6 +59,7 @@ if (inmission == true){
   currentmissionphase = 1; 
 }
 
+//--- end of mission stuff
 
 /*
 //add when publishing 
@@ -46,7 +78,7 @@ window.addEventListener('beforeunload', function (e) {
 const env = {
   user: 'Guest',              // username
   hostname: 'ProjectExFiL',   // optional hostname
-  cwd: '/home/admin',         // current working directory
+  cwd: '/',         // current working directory
   home: '/home/admin',        // home directory, for ~ expansion
 };
 
@@ -119,7 +151,7 @@ function RenderLineText() {
         renderedText += `<span class="highlighted">&nbsp;</span>`;
     }
 
-    terminalInput.innerHTML = `${env.user}@${env.hostname}:${env.cwd}> ` + renderedText;
+    terminalInput.innerHTML = `${env.cwd}> ` + renderedText;
 }
 
 
@@ -222,7 +254,7 @@ user:x:1000:1000:Regular User:/home/user:/bin/bash`
         }
       },
 
-      'home': {
+      'hme': {
         type: 'dir',
         home: true,
         children: {
@@ -238,46 +270,7 @@ user:x:1000:1000:Regular User:/home/user:/bin/bash`
   }
 };
 
-function initializeEnv(fs, env) {
-  // 1. Determine username
-  env.user = fs.user || 'Anonymous';
 
-  // 2. Determine hostname
-  env.hostname = fs.hostname || (fs['/']?.children?.etc?.children?.hostname?.content) || 'localhost';
-
-  // 3. Find home directory
-  function findHome(dir) {
-    if (dir.home === true) return dir;
-    if (!dir.children) return null;
-    for (const key in dir.children) {
-      const res = findHome(dir.children[key]);
-      if (res) return res;
-    }
-    return null;
-  }
-
-  const homeDir = findHome(fs['/']) || fs['/'];
-
-  // 4. Get path string to home
-  function getPathToDir(target, dir = fs['/'], path = '') {
-    if (dir === target) return path || '/';
-    if (!dir.children) return null;
-    for (const key in dir.children) {
-      const childPath = path + '/' + key;
-      const res = getPathToDir(target, dir.children[key], childPath);
-      if (res) return res;
-    }
-    return null;
-  }
-
-  env.home = getPathToDir(homeDir);
-  env.cwd = env.home; // default cwd = home
-
-  return env;
-}
-
-// Usage
-initializeEnv(fs, env);
 console.log(env);
 
 //----start of simulated syscalls-----------------------------------------------------------------------------------------------------------------
@@ -569,9 +562,11 @@ const commands = {
             const output = ls(path, env.cwd);     // use env.cwd
             const filePath = resolve(path, env.cwd);
        const fileNode = getNode(filePath);
+            if (fileNode){
        completeObjective(fileNode, 'x', args[0], true);
             printToTerminal(output);
         }
+    }
     },
     cat: {
   description: 'Display file contents',
@@ -945,8 +940,8 @@ commands.help = {
     }
 
 }
-let historyIndex = null; // tracks current position in history
 
+let historyIndex = null; // tracks current position in history
 
 //input handling
 body.addEventListener('keydown', function(e) {
@@ -1018,7 +1013,7 @@ else {
 
         // Show all possibilities if already at longest common prefix
         if (input === parts.join(' ')) {
-            printToTerminal(`${env.user}@${env.hostname}:${env.cwd}> ${input}`);
+            printToTerminal(`${env.cwd}> ${input}`);
             printToTerminal(suggestions.join('  '));
         }
     }
@@ -1066,7 +1061,7 @@ if (e.key === 'Enter') {
     input.trim();
     if (input === '') return; // ignore empty commands
 
-    printToTerminal(`${env.user}@${env.hostname}:${env.cwd}> ${input}`);
+    printToTerminal(`${env.cwd}> ${input}`);
 
     const [cmd, ...args] = input.split(' ');
 
@@ -1112,16 +1107,6 @@ if (e.key === 'Enter') {
 
 
 })
-
-if (!intutorial){
-// Welcome message
-printToTerminal('Welcome to the JS Terminal! Type "help" for commands.');
-//show empty terminal input line
-RenderLineText();
-}
-
-
-
 
 //dialogue box stuff
 
@@ -1332,40 +1317,33 @@ function waitForContinue(sessionId) {
 
 
   //function takes ShowDialogueLines and gives it the current dialogue meant to be shown. 
- 
-
-  //stuff for mission
-
- let missionnumber = 1;
-
-  if (inmission){
-
-  const params = new URLSearchParams(window.location.search);
-  const requestedMission = parseInt(params.get("mission"), 10);
-  console.log(requestedMission);
-  const highestCompleted = GameSave.state.highestMission;
-if (
-  Number.isNaN(requestedMission) ||   // not a number
-  requestedMission <= 0 ||             // negative or zero
-  requestedMission >= 7                // 7 or higher
-) {
-  window.location.href = "missionselect.html";
-} else {
-  missionnumber = requestedMission;
-  console.log(requestedMission);
+ if (inmission){
+switch (missionnumber) {
+  case 1:
+    
+    break;
+  case 2:
+    // do thing 2
+    break;
+  case 3:
+    // do thing 3
+    break;
+  case 4:
+    // do thing 4
+    break;
+  case 5:
+    // do thing 5
+    break;
+  case 6:
+    // do thing 6
+    break;
+  default:
+    // optional: handle unexpected values
 }
-
-
-  }
-
-   if (inmission){
-document.getElementById("replayinfo").addEventListener("click", function() {
-    DisplayCurrentDialogue();
-});
-   }
-
-
-
+}else {
+    printToTerminal("Welcome to JS terminal! Type 'help' to see a list of commands.")
+}
+  
 
 let missionKey = `mission${missionnumber}`;
 let phaseKey = `phaseDialogue${currentmissionphase}`;
@@ -1526,7 +1504,7 @@ if (nodePhase !== currentmissionphase) return;
             // Mark objective as completed
             objective.status = 'completed';
             updateObjectives();
-            printToTerminal(`Objective completed by entering '${name}'`);
+            //printToTerminal(`Objective completed by entering '${name}'`); //commented out since I dont really like when it says this for cd 
         }
     case 3: {
          const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.code);
@@ -1598,7 +1576,6 @@ function completePhaseObjectives(obj) {
   }
 }
 
-
 function updateObjectives() {
   objectivecontent.innerHTML = "";
 
@@ -1618,7 +1595,7 @@ function updateObjectives() {
       return aThird - bThird;
     })
     .filter(obj => {
-      if (!obj.code) return true; // allow no-code objectives always
+      if (!obj.code) return true;
 
       const parts = normalizeCode(obj.code);
       const phase = parseInt(parts[3]) || 0;
@@ -1629,11 +1606,20 @@ function updateObjectives() {
     const span = document.createElement("span");
     span.id = index + 1;
 
-    if (obj.status === "completed") {
-      span.style.textDecoration = "line-through";
-      span.textContent = "☑ " + obj.text;
+    const parts = normalizeCode(obj.code);
+    const isTextRow = parts[1] === "t";
+
+    if (isTextRow) {
+      // plain text, no checkbox
+      span.textContent = obj.text;
+      span.classList.add("objective-text"); // optional styling hook
     } else {
-      span.textContent = "☐ " + obj.text;
+      if (obj.status === "completed") {
+        span.style.textDecoration = "line-through";
+        span.textContent = "☑ " + obj.text;
+      } else {
+        span.textContent = "☐ " + obj.text;
+      }
     }
 
     objectivecontent.appendChild(span);
@@ -1646,17 +1632,18 @@ function updateObjectives() {
 function checkPhaseCompletion() {
 
   const currentPhaseObjectives = objectiveTracker.filter(obj => {
-    if (typeof obj.code !== "string") return false; // ignore no-code objectives
+    if (typeof obj.code !== "string") return false;
 
     const parts = obj.code.split(".");
     const phase = parseInt(parts[3]) || 0;
-    return phase === currentmissionphase;
+    const isTextRow = parts[1] === "t";
+
+    return phase === currentmissionphase && !isTextRow;
   });
 
-  // If there are no objectives for this phase, do nothing
+  // No real objectives in this phase → do nothing
   if (currentPhaseObjectives.length === 0) return;
 
-  // Check if all current phase objectives are completed
   const allCompleted = currentPhaseObjectives.every(
     obj => obj.status === "completed"
   );
@@ -1665,6 +1652,7 @@ function checkPhaseCompletion() {
     advancePhase();
   }
 }
+
 
 
 
@@ -1711,18 +1699,71 @@ if (intutorial && inmission) {
   renderAvailableCommands(currentmissionphase, availableCommands);
 } 
 
-function checkObjectiveCodeConsistency(objectiveTracker, filesystem) {
-  // 1. Collect all codes from objectiveTracker
-  const trackerCodes = new Set(objectiveTracker.map(obj => obj.code));
+function initializeEnv(fs, env) {
+  // 1. Determine username
+  env.user = fs.user || 'Anonymous';
 
-  // 2. Recursively collect all codes from filesystem nodes
+  // 2. Determine hostname
+  env.hostname = fs.hostname || (fs['/']?.children?.etc?.children?.hostname?.content) || 'localhost';
+
+  // 3. Find home directory
+  function findHome(dir) {
+    if (dir.home === true) return dir;
+    if (!dir.children) return null;
+    for (const key in dir.children) {
+      const res = findHome(dir.children[key]);
+      if (res) return res;
+    }
+    return null;
+  }
+
+  const homeDir = findHome(fs['/']) || fs['/'];
+
+  // 4. Get path string to home
+  function getPathToDir(target, dir = fs['/'], path = '') {
+    if (dir === target) return path || '/';
+    if (!dir.children) return null;
+    for (const key in dir.children) {
+      const childPath = path + '/' + key;
+      const res = getPathToDir(target, dir.children[key], childPath);
+      if (res) return res;
+    }
+    return null;
+  }
+ console.log(homeDir);
+
+  env.home = getPathToDir(homeDir);
+  env.cwd = env.home; // default cwd = home
+
+  return env;
+}
+
+// Usage
+initializeEnv(fs, env);
+
+function checkObjectiveCodeConsistency(objectiveTracker, filesystem) {
+  // 1. Collect all non-text codes from objectiveTracker
+  const trackerCodes = new Set(
+    objectiveTracker
+      .map(obj => obj.code)
+      .filter(code => {
+        if (!code) return false;
+        const parts = code.split(".");
+        return parts[1] !== "t"; // ignore text objectives
+      })
+  );
+
+  // 2. Recursively collect all non-text codes from filesystem nodes
   const filesystemCodes = new Set();
 
   function collectCodes(obj) {
     if (!obj || typeof obj !== "object") return;
 
     if (obj.code) {
-      filesystemCodes.add(obj.code);
+      const parts = obj.code.split(".");
+      if (parts[1] !== "t") {
+        filesystemCodes.add(obj.code);
+      }
     }
 
     // Recursively check nested objects
@@ -1749,6 +1790,7 @@ function checkObjectiveCodeConsistency(objectiveTracker, filesystem) {
     }
   });
 }
+
 
 checkObjectiveCodeConsistency(objectiveTracker, fs);
 
