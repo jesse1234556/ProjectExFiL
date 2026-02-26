@@ -1369,18 +1369,24 @@ function EndOfPhaseDialogue() {
     const endPhaseLines = missionData[missionKey][endPhaseKey] || [];
     const nextPhaseLines = missionData[missionKey][nextPhaseKey] || [];
 
-    if (endPhaseLines.length === 0 && nextPhaseLines.length === 0) {
-        console.warn(`No dialogue found for ${missionKey} end of phase ${currentmissionphase - 1} or phase ${currentmissionphase}`);
+    // Only proceed if there is end-of-phase dialogue
+    if (endPhaseLines.length === 0) {
+        console.warn(`No end-of-phase dialogue found for ${missionKey} phase ${currentmissionphase - 1}`);
         return;
     }
- let combinedDialogue; 
-    // Combine dialogues: end phase, pause, then next phase
-    if (missionData[missionKey].amountOfPhases < currentmissionphase){
-    combinedDialogue = [...endPhaseLines];
-    } else 
-       {
-          combinedDialogue = [...endPhaseLines, "*PAUSE*", ...nextPhaseLines];
-       }
+
+    let combinedDialogue;
+
+    // Combine dialogues: end phase, pause, then next phase (if next phase exists)
+    if (missionData[missionKey].amountOfPhases < currentmissionphase) {
+        combinedDialogue = [...endPhaseLines];
+    } else {
+        combinedDialogue = [...endPhaseLines];
+        if (nextPhaseLines.length > 0) {
+            combinedDialogue.push("*PAUSE*", ...nextPhaseLines);
+        }
+    }
+
     // Display the combined dialogue
     showDialogueLines(combinedDialogue);
 }

@@ -107,7 +107,7 @@ export const mission1 = {
 
 
       
-    endPhase1: ["Hello, operator.",
+    phaseDialogue1: ["Hello, operator.",
               "Welcome to Orientation.",
     ],
       phaseDialogue2: [ "You are inside a computer filesystem.",`You are always in a single directory.`,"Directories hold files and other directories." ],
