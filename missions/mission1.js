@@ -31,6 +31,10 @@ export const mission1 = {
       text:"",
       code: "t.t.2.1",
      },
+      {
+      text:"",
+      code: "t.t.2.2",
+     },
      {
       text: "Use 'ls' to view the contents of the directory",
       code: "x.d.1.2"
@@ -110,6 +114,7 @@ export const mission1 = {
     phaseDialogue1: ["Hello, operator.",
               "Welcome to Orientation.",
     ],
+    endPhase1: [""],
       phaseDialogue2: [ "You are inside a computer filesystem.",`You are always in a single directory.`,"Directories hold files and other directories." ],
       endPhase2: ["Okay, you seem like a competent operator.", "Now time for the good stuff."],
       phaseDialogue3: ["Upload that secret image file to me.", "Quickly please."],

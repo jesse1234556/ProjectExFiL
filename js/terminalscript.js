@@ -10,7 +10,7 @@ const missionData = {
 }
 
 //mission stuff----
-let commandsrestricted = false; 
+let commandsrestricted = true; 
 let inmission = false; 
 let currentmissionphase;
 
@@ -1369,23 +1369,27 @@ function EndOfPhaseDialogue() {
     const endPhaseLines = missionData[missionKey][endPhaseKey] || [];
     const nextPhaseLines = missionData[missionKey][nextPhaseKey] || [];
 
+    let endPhaseExists = true;
     // Only proceed if there is end-of-phase dialogue
-    if (endPhaseLines.length === 0) {
+    if (endPhaseLines.length === 0 || endPhaseLines == "") {
         console.warn(`No end-of-phase dialogue found for ${missionKey} phase ${currentmissionphase - 1}`);
-        return;
+        endPhaseExists = false; 
     }
 
-    let combinedDialogue;
+   let combinedDialogue = [];
 
-    // Combine dialogues: end phase, pause, then next phase (if next phase exists)
-    if (missionData[missionKey].amountOfPhases < currentmissionphase) {
-        combinedDialogue = [...endPhaseLines];
-    } else {
-        combinedDialogue = [...endPhaseLines];
-        if (nextPhaseLines.length > 0) {
-            combinedDialogue.push("*PAUSE*", ...nextPhaseLines);
-        }
+if (endPhaseExists) {
+    // Always start with end phase lines
+    combinedDialogue.push(...endPhaseLines);
+
+    // Add next phase lines if they exist
+    if (nextPhaseLines.length > 0) {
+        combinedDialogue.push("*PAUSE*", ...nextPhaseLines);
     }
+} else if (nextPhaseLines.length > 0) {
+    // No end phase, but there is next phase dialogue
+    combinedDialogue.push(...nextPhaseLines);
+}
 
     // Display the combined dialogue
     showDialogueLines(combinedDialogue);
