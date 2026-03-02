@@ -1440,46 +1440,43 @@ const objectivecontent = document.getElementById("objectivecontent");
 
 
 function completeObjective(node, i, name, customObjective = false) {
-    // Determine if this is a custom objective:
-    // - Use the passed-in customObjective if true/false
-    // - If not passed, defaults to false (regular code)
-    let isCustom = customObjective || (customObjective === null && node.customcode != null);
+    // Determine which code to use
+    let codeToUse = customObjective === true ? node.customcode : node.code;
 
-    // Only proceed if at least one code exists
-    if (!node.code && !node.customcode) return;
+    // Guard: if node has no code, exit early
+    if (!codeToUse || typeof codeToUse !== "string") {
+        // console.warn("completeObjective: missing or invalid code", {
+        //     node,
+        //     customObjective
+        // });
+        return;
+    }
 
-    // Decide which code to use
-    let codeToUse = isCustom ? node.customcode : node.code;
+    // Get phase from the 4th segment of the code
+    const parts = codeToUse.split(".");
+    if (parts.length < 4) return;
+    const nodePhase = parseInt(parts[3]) || 0;
 
-    // Get phase from the 4th digit of the chosen code
-    let nodePhase = parseInt(codeToUse.split(".")[3]) || 0;
+    // Only allow completion if it matches the current mission phase
+    if (nodePhase !== currentmissionphase) return;
 
-//let nodePhase = parseInt(node.code.split(".")[3]) || 0; //old
-// Only allow completion if it matches current mission phase
-if (nodePhase !== currentmissionphase) return;
-            if (!node.code) {
-                return;
-            }
-
+    // Ensure node.code exists for normal objectives
+    if (!node.code && customObjective !== true) return;
 
     switch (i) {
         case 'x': {
-                const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.customcode);
-
-          if (objectiveIndex === -1) {
-                console.log(`Access directory failed: No objective found with code '${node.code}'`);
+            // Custom objective case
+            const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.customcode);
+            if (objectiveIndex === -1) {
+                console.log(`Access directory failed: No objective found with code '${node.customcode}'`);
                 return;
             }
 
-             const objective = objectiveTracker[objectiveIndex]
+            const objective = objectiveTracker[objectiveIndex];
+            if (objective.status === 'completed') return;
 
-          if (objective.status === 'completed') {
-                 return;
-            }
-
-             objective.status = 'completed';
+            objective.status = 'completed';
             updateObjectives();
-            
             break;
         }
 
@@ -1490,98 +1487,76 @@ if (nodePhase !== currentmissionphase) return;
                 return;
             }
 
-            // Find matching objective by code
             const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.code);
-
             if (objectiveIndex === -1) {
                 console.log(`Upload failed: No objective found with code '${node.code}'`);
-                printToTerminal("Upload failed,");
+                printToTerminal("Upload failed");
                 return;
             }
 
             const objective = objectiveTracker[objectiveIndex];
-
             if (objective.status === 'completed') {
-                console.log(`Upload failed: Objective '${name}' is already completed`);
-                printToTerminal(`upload: '${name}' already uploaded`);
+                printToTerminal(`Upload: '${name}' already uploaded`);
                 return;
             }
 
-            // Mark objective as completed
             objective.status = 'completed';
             updateObjectives();
-
-            // Inform the user
             printToTerminal(`Upload of '${name}' successful`);
             break;
         }
+
         case 2: {
-
-            if (!node.code) {
-                return;
-            }
-
-
             const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.code);
-
             if (objectiveIndex === -1) {
                 console.log(`Access directory failed: No objective found with code '${node.code}'`);
                 return;
             }
 
             const objective = objectiveTracker[objectiveIndex];
+            if (objective.status === 'completed') return;
 
-            if (objective.status === 'completed') {
-                return;
-            }
-
-            // Mark objective as completed
             objective.status = 'completed';
             updateObjectives();
-            //printToTerminal(`Objective completed by entering '${name}'`); //commented out since I dont really like when it says this for cd 
+            break; // Added break to prevent fallthrough
         }
-    case 3: {
-         const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.code);
 
+        case 3: {
+            const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.code);
             if (objectiveIndex === -1) {
-                console.log(`Access directory failed: No objective found with code '${node.code}'`);
+                console.log(`Delete failed: No objective found with code '${node.code}'`);
                 return;
             }
 
             const objective = objectiveTracker[objectiveIndex];
+            if (objective.status === 'completed') return;
 
-            if (objective.status === 'completed') {
-                return;
-            }
-             objective.status = 'completed';
+            objective.status = 'completed';
             updateObjectives();
             printToTerminal(`Objective completed by deleting '${name}'`);
+            break;
+        }
 
-    }
-    case 4: {
-         if (!node || !node.code) {
+        case 4: {
+            if (!node || !node.code) return;
+
+            const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.code);
+            if (objectiveIndex === -1) {
+                console.log(`Read failed: No objective found with code '${node.code}'`);
                 return;
             }
 
+            const objective = objectiveTracker[objectiveIndex];
+            if (objective.status === 'completed') return;
 
-
-         const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.code);
-
-          if (objectiveIndex === -1) {
-                console.log(`Access directory failed: No objective found with code '${node.code}'`);
-                return;
-            }
-
-             const objective = objectiveTracker[objectiveIndex]
-
-          if (objective.status === 'completed') {
-                 return;
-            }
-
-             objective.status = 'completed';
+            objective.status = 'completed';
             updateObjectives();
             printToTerminal(`Objective completed by reading '${name}'`);
-    }
+            break;
+        }
+
+        default:
+            console.warn("completeObjective: unknown case", i);
     }
 }
 function completePhaseObjectives(obj) {

@@ -20,7 +20,7 @@ export const mission1 = {
 
     objectives: [
      {
-      text: "Type 'cd home'",
+      text: "Type 'cd Home'",
       code: "2.d.1.1"
      },
      {
@@ -56,7 +56,11 @@ export const mission1 = {
      },
      {
       text: "Type 'upload secret.png'",
-      code: '1.f.1.3',
+      code: '1.f.2.3',
+     },
+     {
+      text: "View the Pictures directory",
+      code: 'x.d.1.3',
      }
 
     ]
@@ -79,7 +83,7 @@ export const mission1 = {
           },
         }
       },
-      'home': {
+      'Home': {
         type: 'dir',
         code: '2.d.1.1',
         customcode:'x.d.1.2',
@@ -91,13 +95,14 @@ export const mission1 = {
               }
              },
              'Pictures':{
+              customcode: 'x.d.1.3',
               accessible: true,
               type: 'dir',
               code: '2.d.2.2',
               children:{
                 'secret.png': {
                   type: 'file',
-                  code: '1.f.1.3'
+                  code: '1.f.2.3'
                 }
               },
             },
@@ -124,4 +129,5 @@ export const mission1 = {
       phaseDialogue2: [ "You are inside a computer filesystem.",`You are always in a single directory.`,"Directories hold files and other directories.","Use ls to see a list of folders in your current location,", "and use cd followed by a folder's name to move inside it." ],
       endPhase2: ["Okay, you seem like a competent operator.", "Now time for the good stuff."],
       phaseDialogue3: ["Upload that secret image file to me.", "Quickly please."],
+      endPhase3: ["Thanks!"]
     }

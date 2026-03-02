@@ -1,4 +1,3 @@
-Add phases.
+Constantly Changing Document; 
 
-Add the objective tracker to only accept objectives with the current phase and have the updateObjectives update only the current ones. Easy. 
-Also add the after phase dialogue. 
+Enter to continue thru dialogue
