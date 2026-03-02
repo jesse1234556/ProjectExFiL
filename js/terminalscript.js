@@ -1,4 +1,5 @@
 const terminalInput = document.getElementById('InputLine');
+const sidebar = document.getElementById("sidebar");
 const terminal = document.getElementById('terminal');
 const body = document.body;
 
@@ -10,7 +11,7 @@ const missionData = {
 }
 
 //mission stuff----
-let commandsrestricted = true; 
+let commandsrestricted = false; 
 let inmission = false; 
 let currentmissionphase;
 
@@ -33,9 +34,11 @@ if (
   requestedMission >= 7                // 7 or higher
 ) {
   window.location.href = "missionselect.html";
+} else if (requestedMission > highestCompleted + 1) {
+  window.location.href = "nicetry.html";
 } else {
-  missionnumber = requestedMission;
-  console.log(requestedMission);
+    missionnumber = requestedMission;
+  
 }
 
 
@@ -545,7 +548,17 @@ const commands = {
             return;
             }
 
+            //permission check
+            let FileNode; 
+            FileNode = getNode(result.cwd);
+            console.log(FileNode);
+           if (FileNode.accessible == false){
+               printToTerminal("Cannot change directory to '" + result.cwd + "' Permission Denied");
+                return;
+            }
+
             // Update cwd
+            console.log(result.cwd);
             env.cwd = result.cwd;
             printToTerminal(`Directory changed to ${env.cwd}`);
 
@@ -1144,6 +1157,8 @@ function closeDialogue(){
     dialogueBox.style.display = "none";
     dialogueTerminal.innerHTML = "";
     darkoverlay.style.display = "none";
+    terminal.style.filter = 'none';
+    sidebar.style.filter = 'none';
     canContinue = false;
     isEndOfDialogue = false;
     dialogueRunning = false;
@@ -1168,6 +1183,8 @@ function openDialogue() {
     dialogueOverlay.style.display = "block";
     darkoverlay.style.display = "block"
     dialogueBox.style.display = "block";
+    terminal.style.filter = 'blur(5px)';
+    sidebar.style.filter = 'blur(5px)';
     canContinue = false;
     if (missionData[missionKey].amountOfPhases < currentmissionphase){
         closeBtn.style.display = "none";
@@ -1293,28 +1310,35 @@ continueButton.addEventListener("click", function() {
        window.location.href = `missionselect.html`;
     }
 });}
-
 function waitForContinue(sessionId) {
     return new Promise(resolve => {
 
-        function handler() {
+        function handler(event) {
+            // If it's a keydown event, only trigger if it's the "Enter" key
+            if (event.type === "keydown" && event.key !== "Enter") return;
+
+            // Cleanup: remove both listeners so they don't stack up
             continueButton.removeEventListener("click", handler);
+            window.removeEventListener("keydown", handler);
+            
             resolve();
         }
 
+        // Add both listeners
         continueButton.addEventListener("click", handler);
+        window.addEventListener("keydown", handler);
 
-        // auto-resolve if dialogue is closed mid-wait
+        // Auto-resolve if dialogue session changes (same as your original logic)
         const check = setInterval(() => {
             if (sessionId !== dialogueSession) {
                 clearInterval(check);
                 continueButton.removeEventListener("click", handler);
+                window.removeEventListener("keydown", handler);
                 resolve();
             }
         }, 50);
     });
 }
-
 
   //function takes ShowDialogueLines and gives it the current dialogue meant to be shown. 
  if (inmission){
@@ -1766,23 +1790,26 @@ function checkObjectiveCodeConsistency(objectiveTracker, filesystem) {
   // 2. Recursively collect all non-text codes from filesystem nodes
   const filesystemCodes = new Set();
 
-  function collectCodes(obj) {
-    if (!obj || typeof obj !== "object") return;
+function collectCodes(obj) {
+  if (!obj || typeof obj !== "object") return;
 
-    if (obj.code) {
-      const parts = obj.code.split(".");
-      if (parts[1] !== "t") {
-        filesystemCodes.add(obj.code);
+  // Handle code and customcode
+  ["code", "customcode"].forEach(key => {
+    if (obj[key]) {
+      const parts = obj[key].split(".");
+      if (parts[1] !== "t") { // ignore text objectives
+        filesystemCodes.add(obj[key]);
       }
     }
+  });
 
-    // Recursively check nested objects
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key) && typeof obj[key] === "object") {
-        collectCodes(obj[key]);
-      }
+  // Recursively check nested objects
+  for (const k in obj) {
+    if (obj.hasOwnProperty(k) && typeof obj[k] === "object") {
+      collectCodes(obj[k]);
     }
   }
+}
 
   collectCodes(filesystem);
 
@@ -1812,7 +1839,7 @@ function getChildren(element) {
   return Array.from(element.children);
 }
 
-const sidebar = document.getElementById("sidebar");
+
 const replayimg = document.getElementById("replayinfo");
 const hackerimg = document.getElementById("hackerimgid"); 
  let donetyping = false; 
@@ -1858,7 +1885,7 @@ const content = `INITIALIZING ORIENTATION PROTOCOL…
 \n• Type commands using your keyboard
 \n• Press Enter to execute a command
 \n• Commands are case sensitive: a ≠ A
-\n• Press Tab to auto-complete paths
+\n• Press Tab to auto-complete 
 \n
 When ready, press Enter.`;
 

@@ -24,23 +24,34 @@ export const mission1 = {
       code: "2.d.1.1"
      },
      {
-      text:"cd = Change Directory",
+      text:"cd = Change directory",
       code: "t.t.3.1",
+     },{
+      text:"cd = Change directory",
+      code: "t.t.5.2",
      },
      {
       text:"",
       code: "t.t.2.1",
+     },
+     {
+      text:"ls = List directory",
+      code: "t.t.4.2",
+     },
+     {
+      text:"",
+      code: "t.t.3.2",
      },
       {
       text:"",
       code: "t.t.2.2",
      },
      {
-      text: "Use 'ls' to view the contents of the directory",
+      text: "Type 'ls' to view the contents of the directory",
       code: "x.d.1.2"
      },
      {
-      text: "Use 'cd' to enter into the correct directory",
+      text: "Enter the Pictures directory",
       code: '2.d.2.2'
      },
      {
@@ -55,6 +66,7 @@ export const mission1 = {
   user: 'Guest',
   hostname: 'ProjectExFiL',
   '/': {
+    accessible: false,
     home: true,
     type: 'dir',
     children: {
@@ -63,7 +75,6 @@ export const mission1 = {
         children: {
           'secret.txt': {
             type: 'file',
-            code: '1.f.2.1',
             content: 'you shouldnt be able to see this, how.',
           },
         }
@@ -73,26 +84,14 @@ export const mission1 = {
         code: '2.d.1.1',
         customcode:'x.d.1.2',
         children: {
-          'documents': {
-            
-            type: 'dir',
-            children: {
-             'NotThisOne':{
+             'Documents':{
+              accessible: false,
               type: 'dir',
               children: {
               }
              },
-             'NotThisOne2':{
-              type: 'dir',
-              children: {
-              }
-             },
-               'NotThisOne4':{
-              type: 'dir',
-              children: {
-              }
-             },
-             'ThisOne!': {
+             'Pictures':{
+              accessible: true,
               type: 'dir',
               code: '2.d.2.2',
               children:{
@@ -100,22 +99,29 @@ export const mission1 = {
                   type: 'file',
                   code: '1.f.1.3'
                 }
+              },
+            },
+              'Music':{
+              accessible: false,
+              type: 'dir',
+              children: {
               }
+             },
+             'Videos': {
+              accessible: false,
+              type: 'dir',
              }
-            }
-          }
         }
       }
     }
   }},
-
 
       
     phaseDialogue1: ["Hello, operator.",
               "Welcome to Orientation.",
     ],
     endPhase1: [""],
-      phaseDialogue2: [ "You are inside a computer filesystem.",`You are always in a single directory.`,"Directories hold files and other directories." ],
+      phaseDialogue2: [ "You are inside a computer filesystem.",`You are always in a single directory.`,"Directories hold files and other directories.","Use ls to see a list of folders in your current location,", "and use cd followed by a folder's name to move inside it." ],
       endPhase2: ["Okay, you seem like a competent operator.", "Now time for the good stuff."],
       phaseDialogue3: ["Upload that secret image file to me.", "Quickly please."],
     }
