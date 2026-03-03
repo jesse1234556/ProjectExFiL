@@ -1824,11 +1824,11 @@ function typewriter(element, text, speed = 50) {
 
     // Define special pauses after certain keywords or lines
     const pauses = {
-        "INITIALIZING ORIENTATION PROTOCOL…": 1000, // 1 second pause
+        "INITIALIZING ORIENTATION PROTOCOL…": 750, // 1 second pause
         "• Type commands using your keyboard": 0,
         "• Press Enter to execute a command": 0,
         "• Use ↑ and ↓ to cycle previous commands": 0,
-        "• Press Tab to auto-complete paths": 1500 // pause after listing tips
+        "• Press Tab to auto-complete paths": 100 // pause after listing tips
     };
 
    
