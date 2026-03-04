@@ -11,7 +11,7 @@ const missionData = {
 }
 
 //mission stuff----
-let commandsrestricted = false; 
+let commandsrestricted = true; //if true, "available commands takes effect" 
 let inmission = false; 
 let currentmissionphase;
 
@@ -539,7 +539,10 @@ const commands = {
             cd: {
         description: 'Change the current directory',
         execute: (args) => {
-            if (args.length === 0) args[0] = '/';
+               if (!args || args.length === 0 || args[0].trim() === "") {
+        printToTerminal("cd: no arguments provided");
+        return;
+    }
 
             const result = cd(args[0], env.cwd);
 
@@ -578,6 +581,8 @@ const commands = {
             if (fileNode){
        completeObjective(fileNode, 'x', args[0], true);
             printToTerminal(output);
+        } else {
+            printToTerminal('ls: ' + args[0] + ': No such directory');
         }
     }
     },
@@ -1301,13 +1306,23 @@ closeDialogue();
 
 //button when mission is complete
 if (inmission){
-continueButton.addEventListener("click", function() {
-    if (continueButton.textContent == "Return to Mission Select") {
+function returnToMissionSelect() {
+    if (continueButton.textContent === "Return to Mission Select") {
         if (GameSave.state.highestMission < missionnumber) {
             GameSave.state.highestMission = missionnumber;
         }
-        GameSave.save();        
-       window.location.href = `missionselect.html`;
+        GameSave.save();
+        window.location.href = "missionselect.html";
+    }
+}
+
+// Click event
+continueButton.addEventListener("click", returnToMissionSelect);
+
+// Enter key event
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        returnToMissionSelect();
     }
 });}
 function waitForContinue(sessionId) {
@@ -1396,7 +1411,7 @@ function EndOfPhaseDialogue() {
     let endPhaseExists = true;
     // Only proceed if there is end-of-phase dialogue
     if (endPhaseLines.length === 0 || endPhaseLines == "") {
-        console.warn(`No end-of-phase dialogue found for ${missionKey} phase ${currentmissionphase - 1}`);
+        //console.warn(`No end-of-phase dialogue found for ${missionKey} phase ${currentmissionphase - 1}`);
         endPhaseExists = false; 
     }
 
@@ -1663,7 +1678,29 @@ function checkPhaseCompletion() {
 }
 
 
-
+    const commandDefinitions = {
+        help: "help = Displays available commands",
+        testdialogue: "testdialogue = Starts a test dialogue sequence",
+        advancephase: "advancephase = Advances to the next mission phase",
+        upload: "upload = Uploads a file",
+        mv: "mv = Move or rename a file",
+        pwd: "pwd = Print working directory",
+        whoami: "whoami = Displays current user",
+        echo: "echo = Prints text to the terminal",
+        clear: "clear = Clears the terminal screen",
+        man: "man = Displays manual information for a command",
+        mkdir: "mkdir = Create a new directory",
+        cd: "cd = Change directory",
+        ls: "ls = List directory contents",
+        cat: "cat = Display file contents",
+        history: "history = Show command history",
+        touch: "touch = Create a new empty file",
+        date: "date = Display current date and time",
+        cp: "cp = Copy files or directories",
+        mainmenu: "mainmenu = Return to main menu",
+        grep: "grep = Search text using patterns",
+        rm: "rm = Remove files or directories"
+    };
 
 
 function renderAvailableCommands(currentmissionphase, availableCommands) {
@@ -1673,15 +1710,20 @@ function renderAvailableCommands(currentmissionphase, availableCommands) {
   // Clear previous commands
   commandcolumn.innerHTML = "";
 
-  
   // Get commands for the current phase
-    const commands = (availableCommands[currentmissionphase] || []).filter(cmd => !extraCommands.includes(cmd));
-  // Render each command separated by <br>
+  const commands = (availableCommands[currentmissionphase] || [])
+    .filter(cmd => !extraCommands.includes(cmd));
+
+  // Render each command
   commands.forEach(cmd => {
     const span = document.createElement("span");
-    span.textContent = cmd;
+
+    // Use definition if it exists
+    span.textContent = commandDefinitions[cmd] || cmd;
+
     commandcolumn.appendChild(span);
     commandcolumn.appendChild(document.createElement("br"));
+    commandcolumn.appendChild(document.createElement("br")); // extra space
   });
 }
 
