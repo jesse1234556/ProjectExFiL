@@ -10,7 +10,7 @@ export const mission1 = {
       //availablecommands, the numbers are the phases. so if 2 contains cd and ls then in phase 2 cd and ls are avaliable. 
       availableCommands: {
       1: [
-        "cd", 
+        "cd", "pwd"
       ],
       2:[
         "cd", "ls" 
