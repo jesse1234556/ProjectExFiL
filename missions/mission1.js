@@ -52,7 +52,6 @@ export const mission1 = {
       text: "View the contents of the Pictures directory",
       code: 'x.d.1.3',
      }
-
     ]
   ,
     //datafs is the file system but in data instead of the real current one. 

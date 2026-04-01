@@ -57,6 +57,7 @@ if (GameSave.state.tutorialdone == false){
     intutorial = true; 
 }}
 
+let retype = false; //true if displaying dialogue again (makes it go faster)
 
 if (inmission == true){
   currentmissionphase = 1; 
@@ -88,7 +89,9 @@ const env = {
 
 const MAX_HISTORY = 50;
 
-let cmdhistory = [];const availableCommands = missionData.mission1.availableCommands;
+let cmdhistory = [];
+
+const availableCommands = missionData.mission1.availableCommands;
 
 // commands to always add
 const extraCommands = ["testdialogue", "advancephase", "pwd", "whoami", "clear", "history", "date", "mainmenu"];
@@ -220,7 +223,7 @@ body.addEventListener('keydown', (event) => {
 });
 
 
-//deal with this later
+//deal with this later (pasting into terminal)
 /*
 terminalInput.addEventListener('paste', (e) => {
   e.preventDefault(); // Stop the default paste
@@ -232,46 +235,7 @@ terminalInput.addEventListener('paste', (e) => {
 // Focus input when anywhere is clicked or a keypress is detected,
 // but ignore if Ctrl or Alt is held
 
-let fs = {
-  user: 'Guest',
-  hostname: 'ProjectExFiL',
-  '/': {
-    type: 'dir',
-    children: {
-      'bin': {
-        type: 'dir',
-        children: {
-          'ls': { type: 'file', content: 'ELF binary' }
-        }
-      },
-
-      'etc': {
-        type: 'dir',
-        children: {
-          'passwd': {
-            type: 'file',
-            content:
-`root:x:0:0:root:/root:/bin/bash
-user:x:1000:1000:Regular User:/home/user:/bin/bash`
-          }
-        }
-      },
-
-      'hme': {
-        type: 'dir',
-        home: true,
-        children: {
-          'user': {
-            type: 'dir',
-            children: {
-              'notes.txt': { type: 'file', id: 'f111', content: 'My test notes' }
-            }
-          }
-        }
-      }
-    }
-  }
-};
+let fs = {};
 
 
 console.log(env);
@@ -565,7 +529,7 @@ const commands = {
             env.cwd = result.cwd;
             printToTerminal(`Directory changed to ${env.cwd}`);
 
-            // ---- OBJECTIVE CHECK
+            // ---- OBJECTIVE CHECK 
             const dirNode = getNode(env.cwd);
             completeObjective(dirNode, 2, args[0])
              }
@@ -1198,10 +1162,14 @@ function openDialogue() {
 
 // random symbols for the decoding effect
 const symbols = "!@#$%^&*()_+=-{}[]<>/?|~";
+
+
+
 function animateLine(line, speed = 35, sessionId) {
     return new Promise(resolve => {
         const lineDiv = document.createElement("div");
         dialogueTerminal.appendChild(lineDiv);
+          speed = retype ? 15 : 35;
 
         let buffer = Array.from(line).map(() =>
             symbols[Math.floor(Math.random() * symbols.length)]
@@ -1244,6 +1212,7 @@ let dialogueRunning = false; // global or module-level flag
 async function showDialogueLines(lines, delay = 350) {
       if (dialogueRunning) return; // prevent overlapping dialogues
     dialogueRunning = true;
+  delay = retype ? 75 : 350;
 
     openDialogue();
     const sessionId = dialogueSession;
@@ -1395,6 +1364,7 @@ let phaseKey = `phaseDialogue${currentmissionphase}`;
     console.log(missionData[missionKey][phaseKey])
     // Safety check in case the mission or phase doesn't exist
     if (dialogueLines && dialogueLines.length > 0) {
+        retype = true; 
         showDialogueLines(dialogueLines);
     } else {
         console.warn(`No dialogue found for ${missionKey} phase ${currentmissionphase}`);
@@ -1431,6 +1401,7 @@ if (endPhaseExists) {
 }
 
     // Display the combined dialogue
+    retype = false; 
     showDialogueLines(combinedDialogue);
 }
 
@@ -1678,14 +1649,14 @@ function checkPhaseCompletion() {
 }
 
 
-    const commandDefinitions = {
-        help: "help = Displays available commands",
-        testdialogue: "testdialogue = Starts a test dialogue sequence",
-        advancephase: "advancephase = Advances to the next mission phase",
-        upload: "upload = Uploads a file",
-        mv: "mv = Move or rename a file",
-        pwd: "pwd = Print working directory",
-        whoami: "whoami = Displays current user",
+ const commandDefinitions = {
+     help: "help = Displays available commands",
+     testdialogue: "testdialogue = Starts a test dialogue sequence",
+     advancephase: "advancephase = Advances to the next mission phase",
+     upload: "upload = Uploads a file",
+     mv: "mv = Move or rename a file",
+     pwd: "pwd = Print working directory",
+      whoami: "whoami = Displays current user",
         echo: "echo = Prints text to the terminal",
         clear: "clear = Clears the terminal screen",
         man: "man = Displays manual information for a command",
@@ -1739,6 +1710,7 @@ function advancePhase() {
 
 if (inmission && !intutorial){
   initializeMission()
+  retype = false; //set manually for init
   DisplayCurrentDialogue();
   updateObjectives();
   renderAvailableCommands(currentmissionphase, availableCommands);
