@@ -1,5 +1,5 @@
 body {
-    background: #181927; /* dark bluish background */
+    background: #0b0c18; /* dark bluish background */
     font-family: Arial, sans-serif;
     color: #00f0ff; /* neon cyan text */
     margin: 0;
@@ -11,7 +11,7 @@ body {
 .terminal {
     overflow-y: scroll;       /* enables scrolling */
     scrollbar-width: none;    /* Firefox */
-    background: #181927;     /* darker bluish background */
+    background: #0b0c18;     /* darker bluish background */
     color: #00deee;           /* neon cyan text */
     font-family: 'Consolas', monospace;
     padding: 20px;

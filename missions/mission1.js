@@ -115,7 +115,7 @@ export const mission1 = {
               "Welcome to Orientation.",
     ],
     endPhase1: [""],
-      phaseDialogue2: [ "You are inside a computer filesystem.",`You are always in a single directory.`,"Directories hold files and other directories.","Use ls to see a list of directories in your current location,", "and use cd followed by a directories name to move inside it." ],
+      phaseDialogue2: [ "You are inside a computer filesystem.","Directories hold files and other directories.",`You are always in a single directory.`, "*PAUSE*", "Use ls to see a list of directories in your current location,", "and use cd followed by a directories name to move inside it." ],
       endPhase2: ["Okay, you seem like a competent operator.", "Now time for the good stuff."],
       phaseDialogue3: ["Upload that secret image file to me.", "Quickly please."],
       endPhase3: ["Thanks!"]
