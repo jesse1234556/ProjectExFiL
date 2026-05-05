@@ -54,15 +54,19 @@ export const mission2 = {
     },
     {
       text: "Navigate to the Logs directory",
-      code: "2.d.1.4"
+      code: "2.d.2.4"
     },
     {
       text: "Delete the evidence file",
-      code: "3.f.1.4"
+      code: "3.f.3.4"
     },
     {
       text: "Type: 'rm <file name>'  Example: rm log.txt",
-      code: "t.t.2.4"
+      code: "t.t.4.4"
+    },
+    {
+      text: "Return back to the Home directory",
+      code: "2.d.1.4",
     }
   ],
 
@@ -86,7 +90,7 @@ export const mission2 = {
         },
         'Home': {
           type: 'dir',
-          code: '2.d.1.1',
+          code: ['2.d.1.1', "2.d.1.4"],
           customcode: 'x.d.1.2',
           children: {
             'Documents': {
@@ -105,11 +109,11 @@ export const mission2 = {
             'Logs': {
               accessible: true,
               type: 'dir',
-              code: '2.d.1.4',
+              code: '2.d.2.4',
               children: {
                 'evidence.log': {
                   type: 'file',
-                  code: '3.f.1.4',
+                  code: '3.f.3.4',
                   content: 'ACCESS LOG: unauthorized entry detected at 03:42.'
                 }
               }

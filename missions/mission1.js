@@ -1,68 +1,95 @@
-//legend for ID.
-  //(f/d) is file or directory, t is for text objective (doesnt have any objective tied to it, just info) 
-  //so first objective is to upload file in phase 1, would be 1 (for upload).f.1 (for first ID).1 (for phase 1)
-  //mission ID is typeOfObjetive.(f/d).IDWithinPhase.phaseCurrenetlyIn
-  //type of objective legend: 1 = upload, 2 = access directory, 3 = delete file or directory, 4 = read file (cat). x = custom
-  //objective code, the (f/d) could also be 't' which meants text. It still renders in order, in phase, but the 1st decimal is ignored. 
 export const mission1 = {
   name: "Orientation Protocol",
-  amountOfPhases: 4,
+  amountOfPhases: 6,
 
   availableCommands: {
-    1: [
-      "cd",
-    ],
-    2: [
-      "cd", "ls"
-    ],
-    3: [
-      "cd", "ls"
-    ],
-    4: [
-      "ls", "upload"
-    ]
+    1: ["cd"],
+    2: ["cd", "ls"],
+    3: ["cd", "ls"],
+    4: ["cd", "ls"],
+    5: ["cd", "ls"],
+    6: ["cd", "ls", "upload"]
   },
 
   objectives: [
+    // Phase 1 - just cd Home
     {
-      text: "Type 'cd Home'",
+      text: "Type 'cd Home' to enter the Home directory",
       code: "2.d.1.1"
     },
+
+    // Phase 2 - introduce ls
     {
-      text: "Type 'ls' to view the contents of the directory",
+      text: "Type 'ls' to see what's inside Home",
       code: "x.d.1.2"
     },
     {
       text: "Enter the Pictures directory",
       code: "2.d.2.2"
     },
+
+    // Phase 3 - introduce cd ..
     {
-      text: "View the contents of Pictures",
-      code: "x.d.1.3"
+      text: "Type 'cd ..' to go back to Home",
+      code: "t.t.1.3"
     },
     {
       text: "Go back to the Home directory",
-      code: "x.d.2.3"
+      code: "2.d.1.3"
     },
     {
-      text: "Type: 'cd ..' to move back one directory",
-      code: "t.t.3.3"
+      text: "List the contents of Home",
+      code: "x.d.2.3"
+    },
+
+    // Phase 4 - drill cd and ls together
+    {
+      text: "Enter the Music directory",
+      code: "2.d.1.4"
+    },
+    {
+      text: "List the contents of Music",
+      code: "x.d.2.4"
+    },
+    {
+      text: "Go back to Home",
+      code: "2.d.3.4"
     },
     {
       text: "Enter the Documents directory",
-      code: "2.d.3.3"
+      code: "2.d.4.4"
     },
     {
-      text: "Upload the image file",
-      code: "1.f.1.4"
+      text: "List the contents of Documents",
+      code: "x.d.5.4"
+    },
+
+    // Phase 5 - find the file
+    {
+      text: "Enter the Pictures directory",
+      code: "2.d.1.5"
     },
     {
-      text: "Type: 'upload <file name>'  Example: upload cat.png",
-      code: "t.t.2.4"
+      text: "List the contents of Pictures",
+      code: "x.d.2.5"
+    },
+
+    // Phase 6 - upload
+    {
+      text: "List the contents of Pictures",
+      code: "x.d.1.6"
     },
     {
-      text: "View the contents of the Pictures directory",
-      code: "x.d.3.4"
+      text: "Type: 'upload <file name>'",
+      code: "t.t.2.6"
+    },
+    {
+      text: "Example: upload secret.png",
+      code: "t.t.3.6"
+    },
+    {
+      text: "Upload the file",
+      code: "1.f.4.6"
     }
   ],
 
@@ -85,30 +112,33 @@ export const mission1 = {
         },
         'Home': {
           type: 'dir',
-          code: '2.d.1.1',
-          customcode: 'x.d.1.2',
+          code: ['2.d.1.1', '2.d.1.3', '2.d.3.4',],
+          customcode: ['x.d.1.2', 'x.d.2.3'],
           children: {
             'Documents': {
               accessible: true,
               type: 'dir',
-              code: '2.d.3.3',
+              code: '2.d.4.4',
+              customcode: 'x.d.5.4',
               children: {}
             },
             'Pictures': {
               accessible: true,
               type: 'dir',
-              code: '2.d.2.2',
-              customcode: 'x.d.1.3',
+              code: ['2.d.2.2', '2.d.1.5'],
+              customcode: ['x.d.2.5', 'x.d.1.6'],
               children: {
                 'secret.png': {
                   type: 'file',
-                  code: '1.f.1.4'
+                  code: '1.f.4.6'
                 }
               }
             },
             'Music': {
-              accessible: false,
+              accessible: true,
               type: 'dir',
+              code: '2.d.1.4',
+              customcode: 'x.d.2.4',
               children: {}
             },
             'Videos': {
@@ -123,34 +153,41 @@ export const mission1 = {
 
   phaseDialogue1: [
     "Hello, operator.",
-    "Welcome to Orientation.",
+    "You are inside a filesystem.",
+    "Type 'cd Home' to begin."
   ],
-  endPhase1: [""],
+  endPhase1: ["Good."],
 
   phaseDialogue2: [
-    "You are inside a computer filesystem.",
-    "Directories hold files and other directories.",
-    "You are always in a single directory.",
-    "*PAUSE*",
-    "Use ls to see a list of directories in your current location,",
-    "and use cd followed by a directory's name to move inside it."
+    "ls shows you what's in your current directory.",
+    "cd moves you into one."
   ],
-  endPhase2: ["Good. You know how to go in.", "But can you find your way back out?"],
+  endPhase2: ["You can move and look.", "Let's go deeper."],
 
   phaseDialogue3: [
-    "cd only moves you forward — into a directory.",
-    "To go back, type cd ..",
-    "Two dots. That's it.",
-    "It moves you one directory up.",
-    "*PAUSE*",
-    "Try it. Go back to Home, then into Documents."
+    "cd .. moves you back one directory.",
+    "Try it."
   ],
-  endPhase3: ["Now you can go in and come back out.", "That's navigation."],
+  endPhase3: ["In, out.", "You've got it."],
 
   phaseDialogue4: [
-    "The file is in Pictures.",
-    "You know how to get there now.",
-    "Upload it."
+    "Drill it.",
+    "Navigate every directory. Look inside each one."
   ],
-  endPhase4: ["Thanks!"]
+  endPhase4: ["That's navigation.", "Now use it."],
+
+  phaseDialogue5: [
+    "There's a file in this filesystem.",
+    "Find it."
+  ],
+  endPhase5: ["There it is.", "Now get it out."],
+
+  phaseDialogue6: [
+    "upload sends a file out.",
+    "You know where it is."
+  ],
+  endPhase6: [
+    "That's the job.",
+    "Orientation complete."
+  ]
 };

@@ -1429,37 +1429,42 @@ function initializeMission(){
 
 const objectivecontent = document.getElementById("objectivecontent"); 
 
-
 function completeObjective(node, i, name, customObjective = false) {
-    // Determine which code to use
-    let codeToUse = customObjective === true ? node.customcode : node.code;
+    // Normalize codes into an array
+    let codes = [];
 
-    // Guard: if node has no code, exit early
-    if (!codeToUse || typeof codeToUse !== "string") {
-        // console.warn("completeObjective: missing or invalid code", {
-        //     node,
-        //     customObjective
-        // });
-        return;
+    if (customObjective === true) {
+        if (node.customcode) {
+            codes = Array.isArray(node.customcode) ? node.customcode : [node.customcode];
+        }
+    } else {
+       if (node && node.code)  {
+            codes = Array.isArray(node.code) ? node.code : [node.code];
+        }
     }
 
-    // Get phase from the 4th segment of the code
-    const parts = codeToUse.split(".");
-    if (parts.length < 4) return;
-    const nodePhase = parseInt(parts[3]) || 0;
+    // Guard: no valid codes
+    if (!codes.length) return;
 
-    // Only allow completion if it matches the current mission phase
-    if (nodePhase !== currentmissionphase) return;
+    // Find the code matching the current mission phase
+    const matchingCode = codes.find(code => {
+        if (typeof code !== "string") return false;
 
-    // Ensure node.code exists for normal objectives
-    if (!node.code && customObjective !== true) return;
+        const parts = code.split(".");
+        if (parts.length < 4) return false;
+
+        const phase = parseInt(parts[3]) || 0;
+        return phase === currentmissionphase;
+    });
+
+    // If no code matches current phase, exit
+    if (!matchingCode) return;
 
     switch (i) {
         case 'x': {
-            // Custom objective case
-            const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.customcode);
+            const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === matchingCode);
             if (objectiveIndex === -1) {
-                console.log(`Access directory failed: No objective found with code '${node.customcode}'`);
+                console.log(`Access directory failed: No objective found with code '${matchingCode}'`);
                 return;
             }
 
@@ -1472,20 +1477,16 @@ function completeObjective(node, i, name, customObjective = false) {
         }
 
         case 1: {
-            if (!node.code) {
-                console.log("Upload failed: Node does not have a code");
-                printToTerminal("Upload failed");
-                return;
-            }
+            const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === matchingCode);
 
-            const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.code);
             if (objectiveIndex === -1) {
-                console.log(`Upload failed: No objective found with code '${node.code}'`);
+                console.log(`Upload failed: No objective found with code '${matchingCode}'`);
                 printToTerminal("Upload failed");
                 return;
             }
 
             const objective = objectiveTracker[objectiveIndex];
+
             if (objective.status === 'completed') {
                 printToTerminal(`Upload: '${name}' already uploaded`);
                 return;
@@ -1498,9 +1499,10 @@ function completeObjective(node, i, name, customObjective = false) {
         }
 
         case 2: {
-            const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.code);
+            const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === matchingCode);
+
             if (objectiveIndex === -1) {
-                console.log(`Access directory failed: No objective found with code '${node.code}'`);
+                console.log(`Access directory failed: No objective found with code '${matchingCode}'`);
                 return;
             }
 
@@ -1509,13 +1511,14 @@ function completeObjective(node, i, name, customObjective = false) {
 
             objective.status = 'completed';
             updateObjectives();
-            break; // Added break to prevent fallthrough
+            break;
         }
 
         case 3: {
-            const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.code);
+            const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === matchingCode);
+
             if (objectiveIndex === -1) {
-                console.log(`Delete failed: No objective found with code '${node.code}'`);
+                console.log(`Delete failed: No objective found with code '${matchingCode}'`);
                 return;
             }
 
@@ -1524,16 +1527,15 @@ function completeObjective(node, i, name, customObjective = false) {
 
             objective.status = 'completed';
             updateObjectives();
-            printToTerminal(`Objective completed by deleting '${name}'`);
+            //printToTerminal(`Objective completed by deleting '${name}'`); //Ive decided to not implement this 
             break;
         }
 
         case 4: {
-            if (!node || !node.code) return;
+            const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === matchingCode);
 
-            const objectiveIndex = objectiveTracker.findIndex(obj => obj.code === node.code);
             if (objectiveIndex === -1) {
-                console.log(`Read failed: No objective found with code '${node.code}'`);
+                console.log(`Read failed: No objective found with code '${matchingCode}'`);
                 return;
             }
 
@@ -1542,7 +1544,7 @@ function completeObjective(node, i, name, customObjective = false) {
 
             objective.status = 'completed';
             updateObjectives();
-            printToTerminal(`Objective completed by reading '${name}'`);
+           // printToTerminal(`Objective completed by reading '${name}'`); // Ive decided not to implement this
             break;
         }
 
@@ -1785,24 +1787,31 @@ function checkObjectiveCodeConsistency(objectiveTracker, filesystem) {
   const filesystemCodes = new Set();
 
 function collectCodes(obj) {
-  if (!obj || typeof obj !== "object") return;
+    if (!obj || typeof obj !== "object") return;
 
-  // Handle code and customcode
-  ["code", "customcode"].forEach(key => {
-    if (obj[key]) {
-      const parts = obj[key].split(".");
-      if (parts[1] !== "t") { // ignore text objectives
-        filesystemCodes.add(obj[key]);
-      }
-    }
-  });
+    // Handle code and customcode
+    ["code", "customcode"].forEach(key => {
+        if (obj[key]) {
+            let values = obj[key];
+            values = Array.isArray(values) ? values : [values];
 
-  // Recursively check nested objects
-  for (const k in obj) {
-    if (obj.hasOwnProperty(k) && typeof obj[k] === "object") {
-      collectCodes(obj[k]);
+            values.forEach(val => {
+                if (typeof val !== "string") return;
+
+                const parts = val.split(".");
+                if (parts[1] !== "t") { // ignore text objectives
+                    filesystemCodes.add(val);
+                }
+            });
+        }
+    });
+
+    // Recursively check nested objects
+    for (const k in obj) {
+        if (obj.hasOwnProperty(k) && typeof obj[k] === "object") {
+            collectCodes(obj[k]);
+        }
     }
-  }
 }
 
   collectCodes(filesystem);
