@@ -5,9 +5,15 @@ const body = document.body;
 
 
 import { mission1} from "../missions/mission1.js";
+import { mission2} from "../missions/mission2.js";
+import { mission3} from "../missions/mission3.js";
+import { mission4} from "../missions/mission4.js";
 
 const missionData = {
     mission1,
+    mission2,
+    mission3, 
+    mission4,
 }
 
 //mission stuff----
@@ -21,7 +27,6 @@ if (window.location.pathname.endsWith("missionplay.html")) {
 
 
  let missionnumber = 1;
-
   if (inmission){
 
   const params = new URLSearchParams(window.location.search);
@@ -40,9 +45,9 @@ if (
     missionnumber = requestedMission;
   
 }
-
-
   }
+  let missionKey = `mission${missionnumber}`;
+
 
    if (inmission){
 document.getElementById("replayinfo").addEventListener("click", function() {
@@ -86,12 +91,11 @@ const env = {
   home: '/home/admin',        // home directory, for ~ expansion
 };
 
-
 const MAX_HISTORY = 50;
 
 let cmdhistory = [];
 
-const availableCommands = missionData.mission1.availableCommands;
+const availableCommands = missionData[missionKey].availableCommands;
 
 // commands to always add
 const extraCommands = ["testdialogue", "advancephase", "pwd", "whoami", "clear", "history", "date", "mainmenu"];
@@ -1353,7 +1357,7 @@ switch (missionnumber) {
 }
   
 
-let missionKey = `mission${missionnumber}`;
+
 let phaseKey = `phaseDialogue${currentmissionphase}`;
 
   function DisplayCurrentDialogue() { 
@@ -1411,6 +1415,7 @@ if (endPhaseExists) {
 //initalize the current mission using missionData aswell as missionumber
 function initializeMission(){
 
+    console.log(missionData);
  fs = { ...missionData[missionKey].datafs };
 
 
